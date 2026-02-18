@@ -96,6 +96,7 @@
         .friend-server-link:hover {
             background-color: #e0a800;
         }
+        /* 神秘小游戏链接样式 */
         .mystery-game-link {
             display: inline-block;
             background-color: #28a745;
@@ -104,11 +105,32 @@
             text-decoration: none;
             border-radius: 5px;
             font-size: 16px;
-            margin-top: 15px;
             transition: background-color 0.3s;
         }
         .mystery-game-link:hover {
             background-color: #218838;
+        }
+        /* 新增PCL2官网链接样式 */
+        .pcl2-website-link {
+            display: inline-flex; /* 使用flex以便图标和文字对齐 */
+            align-items: center;
+            background-color: #9c27b0; /* 紫色，区别于其他按钮 */
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            margin-left: 10px; /* 与左侧按钮间隔 */
+        }
+        .pcl2-website-link:hover {
+            background-color: #7b1fa2;
+        }
+        .pcl2-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px; /* 图标与文字间距 */
+            vertical-align: middle;
         }
         .button-container {
             display: flex;
@@ -119,7 +141,7 @@
         .button-row {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 20px; /* 按钮之间的间距 */
             margin-bottom: 15px;
         }
         /* 邮箱信息样式 */
@@ -217,6 +239,10 @@
             .qq-group-link, .friend-server-link {
                 margin: 0;
             }
+            .pcl2-website-link {
+                margin-left: 0;
+                margin-top: 10px;
+            }
         }
     </style>
 </head>
@@ -231,14 +257,22 @@
         <p>你也可以点击按钮进入友服qq群（已关服，静待复活）</p>
         
         <div class="button-container">
+            <!-- 第一行：QQ群按钮 -->
             <div class="button-row">
                 <a href="https://qm.qq.com/q/nkP2rtU2Ag" class="qq-group-link">服务器QQ群</a>
                 <a href="https://qm.qq.com/q/970547713" class="friend-server-link">友服QQ群跳转（已关服，静待复活）</a>
             </div>
-            <a href="https://qiamaoserver0721.top/qiamao_mini-game/index.html" class="mystery-game-link">神秘小游戏</a>
+            <!-- 第二行：游戏和工具按钮 -->
+            <div class="button-row">
+                <a href="https://qiamaoserver0721.top/qiamao_mini-game/index.html" class="mystery-game-link">神秘小游戏</a>
+                <!-- 新增的PCL2官网按钮，图标来自您提供的图床 -->
+                <a href="https://afdian.net/a/LTCat" class="pcl2-website-link" target="_blank">
+                    <img src="https://tse2-mm.cn.bing.net/th/id/OIP-C.YKSgv09nRJYZpxyjAZg7HgAAAA?w=116&h=120&c=7&r=0&o=7&cb=defcachec2&dpr=1.5&pid=1.7&rm=3" alt="PCL2图标" class="pcl2-icon">
+                    前往PCL2官网
+                </a>
+            </div>
         </div>
         
-        <p>还有神秘小游戏可以玩(</p>
         <p>推荐使用PCL2启动器启动客户端</p>
     </div>
     
