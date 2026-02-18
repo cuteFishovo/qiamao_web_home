@@ -184,34 +184,12 @@
         .bilibili-button:active {
             transform: translateY(0);
         }
-        /* B站图标样式 */
-        .bilibili-icon {
-            width: 20px;
-            height: 20px;
-            background-color: #FB7299;
-            border-radius: 50%;
-            position: relative;
-            display: inline-block;
-        }
-        .bilibili-icon:before,
-        .bilibili-icon:after {
-            content: "";
-            position: absolute;
-            background-color: white;
-        }
-        .bilibili-icon:before {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            top: 3px;
-            left: 3px;
-        }
-        .bilibili-icon:after {
-            width: 6px;
-            height: 4px;
-            border-radius: 2px;
-            top: 9px;
-            left: 7px;
+        /* 新的B站图标样式 - 使用图床图片 */
+        .bilibili-icon-img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            border-radius: 4px;
         }
         /* 响应式设计 */
         @media (max-width: 768px) {
@@ -242,6 +220,10 @@
             .pcl2-website-link {
                 margin-left: 0;
                 margin-top: 10px;
+            }
+            .bilibili-icon-img {
+                width: 20px;
+                height: 20px;
             }
         }
     </style>
@@ -279,9 +261,9 @@
     <!-- 左下角邮箱信息 -->
     <div class="email-info">服务器反馈邮箱：0d00@qiamaoserver0721.top或1348179575@qq.com</div>
     
-    <!-- 右下角B站账号按钮 -->
+    <!-- 右下角B站账号按钮 - 已更新图标为图床图片 -->
     <a href="https://space.bilibili.com/651371142" class="bilibili-button" target="_blank">
-        <span class="bilibili-icon"></span>
+        <img src="https://tse3-mm.cn.bing.net/th/id/OIP-C.d3YP_TUqRSxOZ-a_M0CZFgHaFj?w=207&h=180&c=7&r=0&o=7&cb=defcachec2&dpr=1.5&pid=1.7&rm=3" alt="B站图标" class="bilibili-icon-img">
         腐竹的B站账号
     </a>
 
