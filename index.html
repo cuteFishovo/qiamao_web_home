@@ -28,31 +28,58 @@
             min-height: 100vh;
             overflow-x: hidden;
         }
-        /* 新增：欢迎弹窗样式 */
-        .welcome-popup {
+        /* 新增：仿iPhone 14 Pro灵动岛样式的欢迎弹窗 */
+        .welcome-dynamic-island {
             position: fixed;
-            top: -100px; /* 初始位置在屏幕外 */
-            left: 0;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.2); /* 毛玻璃背景 */
-            backdrop-filter: blur(15px); /* 毛玻璃效果 */
-            -webkit-backdrop-filter: blur(15px); /* Safari 支持 */
-            padding: 20px 0;
-            text-align: center;
+            top: 20px; /* 不贴顶，留出20px间距 */
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px); /* 初始位置在屏幕外上方 */
+            background: rgba(255, 255, 255, 0.15); /* 半透明背景 */
+            backdrop-filter: blur(20px); /* 毛玻璃效果 */
+            -webkit-backdrop-filter: blur(20px); /* Safari 支持 */
+            padding: 12px 30px;
+            border-radius: 50px; /* 椭圆形状，类似灵动岛 */
             color: white;
-            font-size: 24px;
+            font-size: 18px;
             font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2); /* 内外阴影增强立体感 */
+            border: 1px solid rgba(255, 255, 255, 0.2);
             z-index: 10002; /* 确保在最上层 */
-            transition: all 1s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* 惯性+弹性动画 */
+            opacity: 0; /* 初始完全透明 */
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); /* 弹性惯性动画 */
+            white-space: nowrap; /* 防止文字换行 */
+            max-width: 80%; /* 最大宽度限制 */
+            overflow: hidden;
+            text-overflow: ellipsis; /* 文字过长时显示省略号 */
         }
-        .welcome-popup.show {
-            top: 0; /* 显示时位置 */
+        /* 显示状态 */
+        .welcome-dynamic-island.show {
+            transform: translateX(-50%) translateY(0); /* 滑入到指定位置 */
+            opacity: 1; /* 完全显示 */
         }
-        .welcome-popup.hide {
-            top: -150px; /* 隐藏时位置，比初始位置更高以实现反方向收回 */
+        /* 隐藏状态 - 向上滑出并淡出 */
+        .welcome-dynamic-island.hide {
+            transform: translateX(-50%) translateY(-150px); /* 向上滑出 */
+            opacity: 0; /* 淡出 */
+        }
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .welcome-dynamic-island {
+                font-size: 16px;
+                padding: 10px 25px;
+                max-width: 90%;
+                top: 15px; /* 移动端间距稍小 */
+            }
+        }
+        @media (max-width: 480px) {
+            .welcome-dynamic-island {
+                font-size: 14px;
+                padding: 8px 20px;
+                border-radius: 40px; /* 移动端圆角稍小 */
+            }
         }
         .container {
             max-width: 800px;
@@ -415,17 +442,12 @@
                 font-size: 14px;
                 padding: 10px 12px;
             }
-            /* 移动端欢迎弹窗字体大小调整 */
-            .welcome-popup {
-                font-size: 20px;
-                padding: 15px 0;
-            }
         }
     </style>
 </head>
 <body>
-    <!-- 新增：欢迎弹窗 -->
-    <div class="welcome-popup" id="welcomePopup">
+    <!-- 新增：仿iPhone 14 Pro灵动岛样式的欢迎弹窗 -->
+    <div class="welcome-dynamic-island" id="welcomeDynamicIsland">
         欢迎来到qiamao服务器网站！！！
     </div>
     
@@ -657,23 +679,23 @@
             requestAnimationFrame(animate);
         }
 
-        // 欢迎弹窗控制函数
-        function showWelcomePopup() {
-            const welcomePopup = document.getElementById('welcomePopup');
+        // 灵动岛欢迎弹窗控制函数
+        function showDynamicIsland() {
+            const dynamicIsland = document.getElementById('welcomeDynamicIsland');
             
             // 页面加载后延迟500ms显示弹窗，让页面先渲染
             setTimeout(() => {
-                welcomePopup.classList.add('show');
+                dynamicIsland.classList.add('show');
                 
                 // 3秒后反方向收回弹窗
                 setTimeout(() => {
-                    welcomePopup.classList.remove('show');
-                    welcomePopup.classList.add('hide');
+                    dynamicIsland.classList.remove('show');
+                    dynamicIsland.classList.add('hide');
                     
-                    // 动画完成后移除元素（可选）
+                    // 动画完成后可以完全隐藏元素（可选）
                     setTimeout(() => {
                         // 如果需要完全移除弹窗，取消下面这行的注释
-                        // welcomePopup.style.display = 'none';
+                        // dynamicIsland.style.display = 'none';
                     }, 1000); // 等待动画完成
                 }, 3000); // 3秒后开始收回
             }, 500); // 延迟500ms显示
@@ -681,8 +703,8 @@
 
         // 设置面板控制
         document.addEventListener('DOMContentLoaded', function() {
-            // 显示欢迎弹窗
-            showWelcomePopup();
+            // 显示灵动岛欢迎弹窗
+            showDynamicIsland();
             
             // 预加载图片
             preloadImages();
