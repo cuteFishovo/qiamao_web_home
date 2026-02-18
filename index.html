@@ -552,7 +552,7 @@
         
         <!-- 新增：物理效果开关 -->
         <div class="physics-toggle-container">
-            <span class="physics-toggle-label">（BETA）启用物理效果（拥有超多bug）</span>
+            <span class="physics-toggle-label">启用物理效果</span>
             <label class="physics-toggle">
                 <input type="checkbox" id="physicsToggle">
                 <span class="physics-slider"></span>
@@ -640,13 +640,16 @@
         let physicsAnimationId = null; // 物理动画ID
         const physicsImages = []; // 存储启用物理效果的图片
 
-        // 物理参数
+        // 优化后的物理参数
         const physicsConfig = {
-            gravity: 0.2, // 重力加速度
-            friction: 0.98, // 摩擦力
-            bounce: 0.6, // 反弹系数（弹性，不要太高）
-            groundLevel: window.innerHeight - 50, // 地面高度（图片高度50px）
-            collisionDistance: 40 // 碰撞检测距离
+            gravity: 0.15,           // 适中的重力
+            friction: 0.96,          // 摩擦力，让运动缓慢停止
+            bounce: 0.4,             // 适中的反弹系数
+            groundLevel: window.innerHeight - 50,
+            collisionDistance: 55,   // 碰撞检测距离
+            maxSpeed: 3,             // 最大速度限制
+            minSpeed: 0.05,          // 最小速度，低于此值停止
+            collisionForce: 0.15     // 碰撞力
         };
 
         // 预加载所有图片 - 现在预加载1.jpg到36.jpg
@@ -709,7 +712,7 @@
             }
         }
 
-        // 开始物理动画
+        // 优化后的开始物理动画函数
         function startPhysicsAnimation() {
             if (!physicsEnabled) return;
             
@@ -726,34 +729,52 @@
                     img.physicsData.vx *= physicsConfig.friction;
                     img.physicsData.vy *= physicsConfig.friction;
                     
+                    // 速度限制 - 防止速度过大
+                    const speed = Math.sqrt(img.physicsData.vx * img.physicsData.vx + img.physicsData.vy * img.physicsData.vy);
+                    if (speed > physicsConfig.maxSpeed) {
+                        img.physicsData.vx = (img.physicsData.vx / speed) * physicsConfig.maxSpeed;
+                        img.physicsData.vy = (img.physicsData.vy / speed) * physicsConfig.maxSpeed;
+                    }
+                    
+                    // 如果速度很小，停止运动
+                    if (Math.abs(img.physicsData.vx) < physicsConfig.minSpeed && 
+                        Math.abs(img.physicsData.vy) < physicsConfig.minSpeed) {
+                        img.physicsData.vx = 0;
+                        img.physicsData.vy = 0;
+                    }
+                    
                     // 更新位置
                     img.physicsData.x += img.physicsData.vx;
                     img.physicsData.y += img.physicsData.vy;
                     
-                    // 边界碰撞检测（左右边界）
-                    if (img.physicsData.x <= 0) {
+                    // 边界碰撞检测（左右边界）- 使用更柔和的方式
+                    if (img.physicsData.x < 0) {
                         img.physicsData.x = 0;
-                        img.physicsData.vx = Math.abs(img.physicsData.vx) * physicsConfig.bounce;
-                    } else if (img.physicsData.x + 50 >= window.innerWidth) {
+                        img.physicsData.vx = Math.abs(img.physicsData.vx) * physicsConfig.bounce * 0.6;
+                    } else if (img.physicsData.x + 50 > window.innerWidth) {
                         img.physicsData.x = window.innerWidth - 50;
-                        img.physicsData.vx = -Math.abs(img.physicsData.vx) * physicsConfig.bounce;
+                        img.physicsData.vx = -Math.abs(img.physicsData.vx) * physicsConfig.bounce * 0.6;
                     }
                     
-                    // 地面碰撞检测
+                    // 地面碰撞检测 - 更柔和的反弹
                     if (img.physicsData.y >= physicsConfig.groundLevel) {
                         img.physicsData.y = physicsConfig.groundLevel;
-                        img.physicsData.vy = -Math.abs(img.physicsData.vy) * physicsConfig.bounce;
                         
-                        // 如果速度很小，停止运动
-                        if (Math.abs(img.physicsData.vy) < 0.5) {
+                        // 只有向下运动时才反弹
+                        if (img.physicsData.vy > 0) {
+                            img.physicsData.vy = -Math.abs(img.physicsData.vy) * physicsConfig.bounce;
+                        }
+                        
+                        // 如果速度很小，完全停止
+                        if (Math.abs(img.physicsData.vy) < 0.1) {
                             img.physicsData.vy = 0;
                         }
-                        if (Math.abs(img.physicsData.vx) < 0.5) {
+                        if (Math.abs(img.physicsData.vx) < 0.1) {
                             img.physicsData.vx = 0;
                         }
                     }
                     
-                    // 图片间碰撞检测
+                    // 优化后的图片间碰撞检测
                     for (let j = i + 1; j < physicsImages.length; j++) {
                         const otherImg = physicsImages[j];
                         if (!otherImg.physicsData) continue;
@@ -762,18 +783,39 @@
                         const dy = img.physicsData.y - otherImg.physicsData.y;
                         const distance = Math.sqrt(dx * dx + dy * dy);
                         
-                        if (distance < physicsConfig.collisionDistance && distance > 0) {
-                            // 碰撞响应
-                            const angle = Math.atan2(dy, dx);
-                            const targetX = img.physicsData.x + Math.cos(angle) * physicsConfig.collisionDistance;
-                            const targetY = img.physicsData.y + Math.sin(angle) * physicsConfig.collisionDistance;
+                        // 只在真正接近时才碰撞
+                        if (distance < physicsConfig.collisionDistance && distance > 25) {
+                            // 计算碰撞法线
+                            const nx = dx / distance;
+                            const ny = dy / distance;
                             
-                            // 轻微推开
-                            const force = 0.5;
-                            img.physicsData.vx += (img.physicsData.x - targetX) * force;
-                            img.physicsData.vy += (img.physicsData.y - targetY) * force;
-                            otherImg.physicsData.vx += (targetX - img.physicsData.x) * force;
-                            otherImg.physicsData.vy += (targetY - img.physicsData.y) * force;
+                            // 相对速度
+                            const dvx = img.physicsData.vx - otherImg.physicsData.vx;
+                            const dvy = img.physicsData.vy - otherImg.physicsData.vy;
+                            
+                            // 沿法线方向的速度
+                            const velocityAlongNormal = dvx * nx + dvy * ny;
+                            
+                            // 只处理接近的碰撞
+                            if (velocityAlongNormal < 0) {
+                                // 碰撞响应 - 使用动量守恒简化版
+                                const impulse = (-(1 + physicsConfig.bounce) * velocityAlongNormal) * physicsConfig.collisionForce;
+                                
+                                img.physicsData.vx += impulse * nx;
+                                img.physicsData.vy += impulse * ny;
+                                otherImg.physicsData.vx -= impulse * nx;
+                                otherImg.physicsData.vy -= impulse * ny;
+                                
+                                // 轻微分离，防止重叠
+                                const overlap = physicsConfig.collisionDistance - distance;
+                                if (overlap > 0) {
+                                    const separate = overlap * 0.3;
+                                    img.physicsData.x += nx * separate;
+                                    img.physicsData.y += ny * separate;
+                                    otherImg.physicsData.x -= nx * separate;
+                                    otherImg.physicsData.y -= ny * separate;
+                                }
+                            }
                         }
                     }
                     
@@ -781,9 +823,9 @@
                     img.element.style.left = `${img.physicsData.x}px`;
                     img.element.style.top = `${img.physicsData.y}px`;
                     
-                    // 更新旋转（根据水平速度）
-                    if (Math.abs(img.physicsData.vx) > 0.1) {
-                        img.physicsData.rotation += img.physicsData.vx * 0.5;
+                    // 更新旋转（更平缓）
+                    if (Math.abs(img.physicsData.vx) > 0.05) {
+                        img.physicsData.rotation += img.physicsData.vx * 0.3;
                         img.element.style.transform = `rotate(${img.physicsData.rotation}deg)`;
                     }
                 }
@@ -844,11 +886,11 @@
                     // 只处理还在下落的图片
                     const currentTop = parseInt(imgElement.style.top) || -100;
                     if (currentTop < physicsConfig.groundLevel) {
-                        // 为图片添加物理数据
+                        // 为图片添加物理数据 - 使用更小的初始速度
                         const physicsData = {
                             x: parseInt(imgElement.style.left) || 0,
                             y: currentTop,
-                            vx: (Math.random() - 0.5) * 2, // 随机水平速度
+                            vx: (Math.random() - 0.5) * 0.5,  // 减小随机速度
                             vy: 0,
                             rotation: Math.random() * 360
                         };
@@ -995,12 +1037,12 @@
                         // 物理效果开启：停止下落，添加物理属性
                         imgElement.classList.add('physics-enabled');
                         
-                        // 添加物理数据
+                        // 添加物理数据 - 使用更合理的初始速度
                         const physicsData = {
                             x: parseInt(imgElement.style.left) || startX,
                             y: Math.min(currentY, physicsConfig.groundLevel),
-                            vx: (Math.random() - 0.5) * 3, // 随机水平速度
-                            vy: -Math.abs(fallSpeed) * 0.5 * physicsConfig.bounce, // 反弹速度
+                            vx: (Math.random() - 0.5) * 0.8,  // 减小初始水平速度
+                            vy: -Math.abs(fallSpeed) * 0.3 * physicsConfig.bounce,  // 减小反弹速度
                             rotation: currentRotation
                         };
                         
