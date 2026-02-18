@@ -25,7 +25,19 @@
             position: relative;
             min-height: 100vh;
             overflow-x: hidden;
+            opacity: 0;
+            animation: bgFadeIn 1.2s cubic-bezier(0.18, 0.89, 0.32, 1.28) 0.1s forwards;
         }
+        
+        @keyframes bgFadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        
         .welcome-dynamic-island {
             position: fixed;
             top: 20px;
@@ -188,7 +200,10 @@
             border: 2px solid #4CAF50;
             opacity: 0;
             transform: translate(-50%, -50%) scale(0.9);
-            animation: panelAppear 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+        }
+        
+        .settings-panel.show {
+            animation: panelAppear 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
         }
         
         @keyframes panelAppear {
@@ -1057,13 +1072,14 @@
                 settingsPanel.style.display = 'block';
                 overlay.style.display = 'block';
                 setTimeout(() => {
-                    settingsPanel.style.animation = 'panelAppear 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards';
+                    settingsPanel.classList.add('show');
                 }, 10);
             });
             
             function closeSettingsPanel() {
                 settingsPanel.style.display = 'none';
                 overlay.style.display = 'none';
+                settingsPanel.classList.remove('show');
             }
             
             closeButton.addEventListener('click', closeSettingsPanel);
