@@ -219,37 +219,6 @@
             z-index: 10000;
             display: none;
         }
-        /* 新增：调试面板样式 */
-        .debug-panel {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 15px;
-            border-radius: 5px;
-            font-size: 12px;
-            z-index: 9998;
-            max-width: 300px;
-            display: none;
-            font-family: monospace;
-        }
-        .debug-button {
-            position: fixed;
-            top: 60px;
-            right: 20px;
-            background-color: #007bff;
-            color: white;
-            padding: 8px 12px;
-            border: none;
-            border-radius: 3px;
-            font-size: 12px;
-            cursor: pointer;
-            z-index: 9999;
-        }
-        .debug-button:hover {
-            background-color: #0056b3;
-        }
         /* 修改：左下角邮箱信息样式 */
         .email-info {
             position: fixed;
@@ -484,17 +453,6 @@
                 font-size: 14px;
                 padding: 10px 12px;
             }
-            .debug-button {
-                top: 50px;
-                right: 10px;
-                font-size: 10px;
-                padding: 6px 10px;
-            }
-            .debug-panel {
-                top: 70px;
-                right: 10px;
-                max-width: calc(100% - 20px);
-            }
         }
         @media (max-width: 480px) {
             .right-bottom-container {
@@ -516,9 +474,6 @@
     <!-- 图片雨设置按钮 -->
     <button class="settings-button" id="settingsButton">图标下雨效果设置</button>
     
-    <!-- 新增：调试按钮 -->
-    <button class="debug-button" id="debugButton">调试</button>
-    
     <!-- 设置面板遮罩层 -->
     <div class="overlay" id="overlay"></div>
     
@@ -537,14 +492,6 @@
         <p style="font-size: 12px; color: #999; text-align: center; margin-top: 15px;">
             注意：高密度设置可能影响页面性能，请根据设备性能选择
         </p>
-    </div>
-    
-    <!-- 新增：调试面板 -->
-    <div class="debug-panel" id="debugPanel">
-        <h4 style="margin-top: 0; margin-bottom: 10px;">图片雨调试信息</h4>
-        <div id="debugInfo">正在加载调试信息...</div>
-        <button id="testAllImages" style="margin-top: 10px; padding: 5px 10px; background-color: #28a745; color: white; border: none; border-radius: 3px; cursor: pointer;">测试所有图片</button>
-        <button id="clearDebug" style="margin-top: 5px; padding: 5px 10px; background-color: #dc3545; color: white; border: none; border-radius: 3px; cursor: pointer;">清空控制台</button>
     </div>
     
     <div class="container">
@@ -615,108 +562,29 @@
         let rainIntervalId = null;
         let imagesLoaded = 0;
         const imagePool = [];
-        const imageStatus = {}; // 记录每张图片的加载状态
         let rainEnabled = true; // 控制是否在下雨
-        
-        // 调试信息
-        let debugInfo = {
-            totalImages: totalImages,
-            loadedImages: 0,
-            failedImages: 0,
-            imagePoolSize: 0,
-            lastUsedImages: [],
-            allImagesTested: false
-        };
 
         // 预加载所有图片 - 现在预加载1.jpg到36.jpg
         function preloadImages() {
-            console.log(`开始预加载 ${totalImages} 张图片...`);
-            
             for (let i = 1; i <= totalImages; i++) {
                 const img = new Image();
-                const imageName = `${i}.jpg`;
-                img.src = `${imageBasePath}${imageName}`;
-                
-                // 记录图片信息
-                imageStatus[imageName] = {
-                    loaded: false,
-                    error: false,
-                    src: img.src
-                };
-                
+                img.src = `${imageBasePath}${i}.jpg`;
                 img.onload = () => {
                     imagesLoaded++;
-                    imageStatus[imageName].loaded = true;
-                    imagePool.push({
-                        src: img.src,
-                        name: imageName,
-                        index: i
-                    });
-                    
-                    console.log(`✅ 图片加载成功: ${imageName}`);
-                    
                     if (imagesLoaded === totalImages) {
                         console.log(`所有 ${totalImages} 张图片预加载完成，开始图片雨。`);
-                        updateDebugInfo();
                         startRaining();
                     }
                 };
-                
                 img.onerror = () => {
+                    console.warn(`图片加载失败: ${img.src}`);
                     imagesLoaded++;
-                    imageStatus[imageName].error = true;
-                    console.warn(`❌ 图片加载失败: ${imageName} (路径: ${img.src})`);
-                    
-                    // 即使有图片加载失败，也继续执行
+                    // 即使有图片加载失败，也继续执行，避免阻塞
                     if (imagesLoaded === totalImages) {
-                        console.log(`图片预加载完成，成功加载: ${imagePool.length} 张，失败: ${totalImages - imagePool.length} 张`);
-                        updateDebugInfo();
                         startRaining();
                     }
                 };
-            }
-        }
-
-        // 更新调试信息
-        function updateDebugInfo() {
-            debugInfo.loadedImages = imagePool.length;
-            debugInfo.failedImages = totalImages - imagePool.length;
-            debugInfo.imagePoolSize = imagePool.length;
-            
-            // 更新调试面板显示
-            const debugInfoDiv = document.getElementById('debugInfo');
-            if (debugInfoDiv) {
-                let html = `
-                    <div><strong>总图片数:</strong> ${debugInfo.totalImages}</div>
-                    <div><strong>成功加载:</strong> ${debugInfo.loadedImages}</div>
-                    <div><strong>加载失败:</strong> ${debugInfo.failedImages}</div>
-                    <div><strong>图片池大小:</strong> ${debugInfo.imagePoolSize}</div>
-                    <div><strong>当前密度:</strong> ${getIntensityName(currentIntensity)}</div>
-                    <div><strong>最近使用的图片:</strong></div>
-                `;
-                
-                if (debugInfo.lastUsedImages.length > 0) {
-                    html += '<div style="max-height: 100px; overflow-y: auto; font-size: 10px;">';
-                    debugInfo.lastUsedImages.slice(-10).forEach(img => {
-                        html += `<div>${img}</div>`;
-                    });
-                    html += '</div>';
-                } else {
-                    html += '<div>暂无</div>';
-                }
-                
-                // 显示33-36.jpg的加载状态
-                html += '<div><strong>33-36.jpg状态:</strong></div>';
-                for (let i = 33; i <= 36; i++) {
-                    const imgName = `${i}.jpg`;
-                    const status = imageStatus[imgName];
-                    if (status) {
-                        const statusText = status.loaded ? '✅ 已加载' : status.error ? '❌ 加载失败' : '⏳ 加载中';
-                        html += `<div>${imgName}: ${statusText}</div>`;
-                    }
-                }
-                
-                debugInfoDiv.innerHTML = html;
+                imagePool.push(img);
             }
         }
 
@@ -737,8 +605,6 @@
             for (let i = 0; i < initialCount; i++) {
                 setTimeout(() => createFallingImage(), i * 50);
             }
-            
-            console.log(`开始图片雨，密度: ${getIntensityName(currentIntensity)}, 间隔: ${spawnInterval}ms`);
         }
 
         // 停止下雨效果
@@ -746,7 +612,6 @@
             if (rainIntervalId) {
                 clearInterval(rainIntervalId);
                 rainIntervalId = null;
-                console.log('图片雨已停止');
             }
         }
 
@@ -773,7 +638,6 @@
             startRaining();
             
             console.log(`已切换为${getIntensityName(intensity)}模式，图片生成间隔：${spawnInterval}ms`);
-            updateDebugInfo();
             
             // 如果是超级暴雨，添加性能警告
             if (intensity === 'superStorm') {
@@ -798,24 +662,12 @@
             if (imagePool.length === 0 || !rainEnabled) return;
 
             const randomIndex = Math.floor(Math.random() * imagePool.length);
-            const imgData = imagePool[randomIndex];
+            const imgSource = imagePool[randomIndex];
 
             const imgElement = document.createElement('img');
             imgElement.className = 'falling-image';
-            imgElement.src = imgData.src;
-            imgElement.alt = `Mod Icon ${imgData.name}`;
-            imgElement.title = imgData.name; // 鼠标悬停显示图片名
-
-            // 记录使用的图片
-            debugInfo.lastUsedImages.push(imgData.name);
-            if (debugInfo.lastUsedImages.length > 20) {
-                debugInfo.lastUsedImages.shift();
-            }
-            
-            // 每10张图片更新一次调试信息
-            if (debugInfo.lastUsedImages.length % 10 === 0) {
-                updateDebugInfo();
-            }
+            imgElement.src = imgSource.src;
+            imgElement.alt = 'Mod Icon';
 
             // 对于超级暴雨模式，随机化图片大小以增加视觉效果
             if (currentIntensity === 'superStorm') {
@@ -853,65 +705,6 @@
             requestAnimationFrame(animate);
         }
 
-        // 测试所有图片
-        function testAllImages() {
-            console.log('开始测试所有图片...');
-            debugInfo.allImagesTested = true;
-            
-            // 停止当前下雨
-            stopRaining();
-            
-            // 清空屏幕上的所有图片
-            document.querySelectorAll('.falling-image').forEach(img => img.remove());
-            
-            // 按顺序显示所有图片
-            let delay = 0;
-            imagePool.forEach((imgData, index) => {
-                setTimeout(() => {
-                    // 创建测试图片
-                    const testImg = document.createElement('img');
-                    testImg.className = 'falling-image';
-                    testImg.src = imgData.src;
-                    testImg.alt = `Test ${imgData.name}`;
-                    testImg.title = `测试: ${imgData.name}`;
-                    testImg.style.width = '60px';
-                    testImg.style.left = `${50 + (index % 5) * 100}px`;
-                    testImg.style.top = '-100px';
-                    
-                    document.body.appendChild(testImg);
-                    
-                    // 简单下落动画
-                    let yPos = -100;
-                    const speed = 5;
-                    
-                    function animateTest() {
-                        yPos += speed;
-                        testImg.style.top = `${yPos}px`;
-                        
-                        if (yPos < window.innerHeight) {
-                            requestAnimationFrame(animateTest);
-                        } else {
-                            setTimeout(() => {
-                                document.body.removeChild(testImg);
-                            }, 1000);
-                        }
-                    }
-                    
-                    animateTest();
-                    
-                    console.log(`显示测试图片: ${imgData.name}`);
-                }, delay);
-                
-                delay += 300; // 每300ms显示一张
-            });
-            
-            // 测试完成后重新开始下雨
-            setTimeout(() => {
-                console.log('测试完成，重新开始图片雨');
-                startRaining();
-            }, delay + 2000);
-        }
-
         // 灵动岛欢迎弹窗控制函数
         function showDynamicIsland() {
             const dynamicIsland = document.getElementById('welcomeDynamicIsland');
@@ -947,10 +740,6 @@
             const overlay = document.getElementById('overlay');
             const closeButton = document.getElementById('closeButton');
             const intensityOptions = document.querySelectorAll('.rain-intensity-option');
-            const debugButton = document.getElementById('debugButton');
-            const debugPanel = document.getElementById('debugPanel');
-            const testAllImagesBtn = document.getElementById('testAllImages');
-            const clearDebugBtn = document.getElementById('clearDebug');
             
             // 打开设置面板
             settingsButton.addEventListener('click', function() {
@@ -982,34 +771,14 @@
                 }
             });
             
-            // 调试按钮控制
-            debugButton.addEventListener('click', function() {
-                if (debugPanel.style.display === 'block') {
-                    debugPanel.style.display = 'none';
-                } else {
-                    debugPanel.style.display = 'block';
-                    updateDebugInfo();
-                }
-            });
-            
-            // 测试所有图片按钮
-            if (testAllImagesBtn) {
-                testAllImagesBtn.addEventListener('click', testAllImages);
-            }
-            
-            // 清空控制台按钮
-            if (clearDebugBtn) {
-                clearDebugBtn.addEventListener('click', function() {
-                    console.clear();
-                    console.log('控制台已清空');
-                });
-            }
-            
             // 初始选中中雨选项
             document.querySelector('.rain-intensity-option[data-intensity="medium"]').classList.add('selected');
-            
-            // 初始更新调试信息
-            setTimeout(updateDebugInfo, 1000);
         });
 
-        //
+        // 处理窗口大小变化
+        window.addEventListener('resize', function() {
+            // 这里可以添加窗口大小变化时的处理
+        });
+    </script>
+</body>
+</html>
