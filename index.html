@@ -540,8 +540,8 @@
 
     <!-- 图片雨特效脚本 -->
     <script>
-        // 配置参数
-        const totalImages = 32;
+        // 配置参数 - 将图片总数从32改为36
+        const totalImages = 36; // 修改处：从32改为36，包含1.jpg到36.jpg
         const fallSpeedMin = 3;
         const fallSpeedMax = 8;
         const spinSpeedMin = -2;
@@ -564,7 +564,7 @@
         const imagePool = [];
         let rainEnabled = true; // 控制是否在下雨
 
-        // 预加载所有图片
+        // 预加载所有图片 - 现在预加载1.jpg到36.jpg
         function preloadImages() {
             for (let i = 1; i <= totalImages; i++) {
                 const img = new Image();
@@ -579,6 +579,7 @@
                 img.onerror = () => {
                     console.warn(`图片加载失败: ${img.src}`);
                     imagesLoaded++;
+                    // 即使有图片加载失败，也继续执行，避免阻塞
                     if (imagesLoaded === totalImages) {
                         startRaining();
                     }
