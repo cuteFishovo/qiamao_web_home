@@ -25,6 +25,7 @@
             background-repeat: no-repeat;
             position: relative;
             min-height: 100vh;
+            overflow-x: hidden; /* 防止水平滚动条 */
         }
         .container {
             max-width: 800px;
@@ -34,7 +35,17 @@
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             position: relative;
-            z-index: 1;
+            z-index: 1; /* 确保内容在图片雨上方 */
+        }
+        /* 【新增】图片雨样式 */
+        .falling-image {
+            position: fixed;
+            top: -100px; /* 从屏幕上方之外开始 */
+            width: 50px; /* 图片宽度，可根据需要调整 */
+            height: auto;
+            pointer-events: none; /* 确保图片不会干扰点击下面的按钮 */
+            z-index: 0; /* 置于背景和内容层之间 */
+            opacity: 0.7; /* 半透明，营造柔和效果 */
         }
         /* 特别感谢按钮样式 */
         .special-thanks-button {
@@ -96,7 +107,6 @@
         .friend-server-link:hover {
             background-color: #e0a800;
         }
-        /* 神秘小游戏链接样式 */
         .mystery-game-link {
             display: inline-block;
             background-color: #28a745;
@@ -105,32 +115,11 @@
             text-decoration: none;
             border-radius: 5px;
             font-size: 16px;
+            margin-top: 15px;
             transition: background-color 0.3s;
         }
         .mystery-game-link:hover {
             background-color: #218838;
-        }
-        /* 新增PCL2官网链接样式 */
-        .pcl2-website-link {
-            display: inline-flex;
-            align-items: center;
-            background-color: #9c27b0;
-            color: white;
-            padding: 12px 24px;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 16px;
-            transition: background-color 0.3s;
-            margin-left: 10px;
-        }
-        .pcl2-website-link:hover {
-            background-color: #7b1fa2;
-        }
-        .pcl2-icon {
-            width: 20px;
-            height: 20px;
-            margin-right: 8px;
-            vertical-align: middle;
         }
         .button-container {
             display: flex;
@@ -184,12 +173,34 @@
         .bilibili-button:active {
             transform: translateY(0);
         }
-        /* 新的B站图标样式 - 使用图床图片 */
-        .bilibili-icon-img {
-            width: 24px;
-            height: 24px;
-            object-fit: contain;
-            border-radius: 4px;
+        /* B站图标样式 */
+        .bilibili-icon {
+            width: 20px;
+            height: 20px;
+            background-color: #FB7299;
+            border-radius: 50%;
+            position: relative;
+            display: inline-block;
+        }
+        .bilibili-icon:before,
+        .bilibili-icon:after {
+            content: "";
+            position: absolute;
+            background-color: white;
+        }
+        .bilibili-icon:before {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+        }
+        .bilibili-icon:after {
+            width: 6px;
+            height: 4px;
+            border-radius: 2px;
+            top: 9px;
+            left: 7px;
         }
         /* 响应式设计 */
         @media (max-width: 768px) {
@@ -217,13 +228,9 @@
             .qq-group-link, .friend-server-link {
                 margin: 0;
             }
-            .pcl2-website-link {
-                margin-left: 0;
-                margin-top: 10px;
-            }
-            .bilibili-icon-img {
-                width: 20px;
-                height: 20px;
+            /* 移动端减小图片大小 */
+            .falling-image {
+                width: 35px;
             }
         }
     </style>
@@ -239,33 +246,123 @@
         <p>你也可以点击按钮进入友服qq群（已关服，静待复活）</p>
         
         <div class="button-container">
-            <!-- 第一行：QQ群按钮 -->
             <div class="button-row">
                 <a href="https://qm.qq.com/q/nkP2rtU2Ag" class="qq-group-link">服务器QQ群</a>
                 <a href="https://qm.qq.com/q/970547713" class="friend-server-link">友服QQ群跳转（已关服，静待复活）</a>
             </div>
-            <!-- 第二行：游戏和工具按钮 -->
-            <div class="button-row">
-                <a href="https://qiamaoserver0721.top/qiamao_mini-game/index.html" class="mystery-game-link">神秘小游戏</a>
-                <!-- 新增的PCL2官网按钮，图标来自您提供的图床 -->
-                <a href="https://afdian.net/a/LTCat" class="pcl2-website-link" target="_blank">
-                    <img src="https://tse2-mm.cn.bing.net/th/id/OIP-C.YKSgv09nRJYZpxyjAZg7HgAAAA?w=116&h=120&c=7&r=0&o=7&cb=defcachec2&dpr=1.5&pid=1.7&rm=3" alt="PCL2图标" class="pcl2-icon">
-                    前往PCL2官网
-                </a>
-            </div>
+            <a href="https://qiamaoserver0721.top/qiamao_mini-game/index.html" class="mystery-game-link">神秘小游戏</a>
         </div>
         
-        <p>推荐使用PCL2启动器启动客户端</p>
+        <p>还有神秘小游戏可以玩(</p>
     </div>
     
     <!-- 左下角邮箱信息 -->
     <div class="email-info">服务器反馈邮箱：0d00@qiamaoserver0721.top或1348179575@qq.com</div>
     
-    <!-- 右下角B站账号按钮 - 已更新图标为图床图片 -->
+    <!-- 右下角B站账号按钮 -->
     <a href="https://space.bilibili.com/651371142" class="bilibili-button" target="_blank">
-        <img src="https://tse3-mm.cn.bing.net/th/id/OIP-C.d3YP_TUqRSxOZ-a_M0CZFgHaFj?w=207&h=180&c=7&r=0&o=7&cb=defcachec2&dpr=1.5&pid=1.7&rm=3" alt="B站图标" class="bilibili-icon-img">
+        <span class="bilibili-icon"></span>
         腐竹的B站账号
     </a>
 
+    <!-- 【新增】图片雨特效脚本 -->
+    <script>
+        // 配置参数
+        const totalImages = 32; // 图片总数
+        const fallSpeedMin = 3; // 最小下落速度 (像素/帧)
+        const fallSpeedMax = 8; // 最大下落速度 (像素/帧)
+        const spinSpeedMin = -2; // 最小旋转速度 (度/帧)
+        const spinSpeedMax = 2;  // 最大旋转速度 (度/帧)
+        const spawnInterval = 300; // 生成新图片的间隔时间(毫秒)
+        const imageBasePath = './'; // 图片所在路径，假设与网页同目录。如果需要，可改为 'images/'
+
+        let imagesLoaded = 0;
+        const imagePool = []; // 预加载的图片对象数组
+
+        // 1. 预加载所有图片
+        function preloadImages() {
+            for (let i = 1; i <= totalImages; i++) {
+                const img = new Image();
+                img.src = `${imageBasePath}${i}.jpg`;
+                img.onload = () => {
+                    imagesLoaded++;
+                    if (imagesLoaded === totalImages) {
+                        console.log(`所有 ${totalImages} 张图片预加载完成，开始图片雨。`);
+                        startRaining();
+                    }
+                };
+                img.onerror = () => {
+                    console.warn(`图片加载失败: ${img.src}`);
+                    imagesLoaded++; // 即使失败也计数，避免阻塞
+                    if (imagesLoaded === totalImages) {
+                        startRaining();
+                    }
+                };
+                imagePool.push(img);
+            }
+        }
+
+        // 2. 开始下雨效果
+        function startRaining() {
+            // 定期创建新的下落图片
+            setInterval(createFallingImage, spawnInterval);
+            // 初始创建一些图片
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => createFallingImage(), i * 100);
+            }
+        }
+
+        // 3. 创建单个下落图片元素并设置动画
+        function createFallingImage() {
+            if (imagePool.length === 0) return;
+
+            // 随机选择一张图片
+            const randomIndex = Math.floor(Math.random() * imagePool.length);
+            const imgSource = imagePool[randomIndex];
+
+            // 创建图片元素
+            const imgElement = document.createElement('img');
+            imgElement.className = 'falling-image';
+            imgElement.src = imgSource.src;
+            imgElement.alt = 'Mod Icon';
+
+            // 随机初始位置（水平方向）
+            const startX = Math.random() * (window.innerWidth - 50);
+            imgElement.style.left = `${startX}px`;
+
+            // 随机属性
+            const fallSpeed = fallSpeedMin + Math.random() * (fallSpeedMax - fallSpeedMin);
+            const spinSpeed = spinSpeedMin + Math.random() * (spinSpeedMax - spinSpeedMin);
+            let currentRotation = Math.random() * 360;
+            let currentY = -100; // 从顶部外开始
+
+            // 将图片添加到页面
+            document.body.appendChild(imgElement);
+
+            // 动画函数
+            function animate() {
+                currentY += fallSpeed;
+                currentRotation += spinSpeed;
+
+                imgElement.style.top = `${currentY}px`;
+                imgElement.style.transform = `rotate(${currentRotation}deg)`;
+
+                // 如果图片移出屏幕底部，则移除它
+                if (currentY > window.innerHeight) {
+                    document.body.removeChild(imgElement);
+                    return; // 停止该图片的动画
+                }
+
+                // 继续动画
+                requestAnimationFrame(animate);
+            }
+
+            // 开始这个图片的动画
+            requestAnimationFrame(animate);
+        }
+
+        // 页面加载完成后开始预加载图片
+        window.addEventListener('DOMContentLoaded', preloadImages);
+    </script>
 </body>
 </html>
