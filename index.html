@@ -43,7 +43,7 @@
             z-index: 500;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 1s ease-in-out; /* 调整为1秒过渡 */
+            transition: opacity 1s ease-in-out; /* 1秒过渡动画 */
             max-width: 150px;
             max-height: 150px;
             border-radius: 8px;
@@ -52,11 +52,11 @@
         /* 静态GIF图片样式 */
         .static-gif {
             position: fixed;
-            width: 120px; /* 调整了图片大小 */
+            width: 120px;
             height: auto;
             z-index: 999;
-            pointer-events: none; /* 防止图片干扰点击 */
-            top: 20px; /* 固定在左上角 */
+            pointer-events: none;
+            top: 20px;
             left: 20px;
         }
         /* 特别感谢按钮样式 */
@@ -135,16 +135,16 @@
         }
         /* 新增PCL2官网链接样式 */
         .pcl2-website-link {
-            display: inline-flex; /* 使用flex以便图标和文字对齐 */
+            display: inline-flex;
             align-items: center;
-            background-color: #9c27b0; /* 紫色，区别于其他按钮 */
+            background-color: #9c27b0;
             color: white;
             padding: 12px 24px;
             text-decoration: none;
             border-radius: 5px;
             font-size: 16px;
             transition: background-color 0.3s;
-            margin-left: 10px; /* 与左侧按钮间隔 */
+            margin-left: 10px;
         }
         .pcl2-website-link:hover {
             background-color: #7b1fa2;
@@ -152,7 +152,7 @@
         .pcl2-icon {
             width: 20px;
             height: 20px;
-            margin-right: 8px; /* 图标与文字间距 */
+            margin-right: 8px;
             vertical-align: middle;
         }
         .button-container {
@@ -164,7 +164,7 @@
         .button-row {
             display: flex;
             justify-content: center;
-            gap: 20px; /* 按钮之间的间距 */
+            gap: 20px;
             margin-bottom: 15px;
         }
         /* 邮箱信息样式 */
@@ -267,7 +267,7 @@
                 margin-top: 10px;
             }
             .static-gif {
-                width: 80px; /* 移动端缩小图片尺寸 */
+                width: 80px;
                 top: 10px;
                 left: 10px;
             }
@@ -279,7 +279,7 @@
     </style>
 </head>
 <body>
-    <!-- 静态GIF图片 - 已移除移动功能 -->
+    <!-- 静态GIF图片 -->
     <img id="staticGif" class="static-gif" src="https://i0.hdslb.com/bfs/article/banner/bdc4b6a4aecf1dace7b8d7b0c8e8a7d7f3d7c1e9.gif" alt="装饰图">
     
     <!-- 特别感谢按钮 -->
@@ -322,7 +322,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // 1. 使用您最初提供的全部图片链接
+            // 1. 图片链接库（您提供的全部24个链接）
             const imageUrls = [
                 "https://i.mcmod.cn/editor/upload/20200424/1587740157_79030_gyLw.webp",
                 "https://i.mcmod.cn/editor/upload/20200430/1588240369_79030_FLjg.webp",
@@ -350,135 +350,120 @@
                 "https://i.mcmod.cn/item/icon/128x128/0/8320.png?v=3"
             ];
 
-            // 2. 创建图片元素并管理
-            const maxImages = 8; // 同时显示的最大图片数量
-            const visibleTime = 1000; // 改为1秒可见时间
+            // 2. 配置参数
+            const MAX_CONCURRENT_IMAGES = 5;      // 同时存在的最大图片数
+            const VISIBLE_TIME = 1000;            // 可见时间1秒
+            const NEXT_IMAGE_DELAY = 1500;        // 显示下一张图片的固定间隔（毫秒）
+            const DISPLAY_WIDTH = 120;            // 显示宽度
             
-            // 用于跟踪已显示的图片索引，避免重复
-            let usedIndexes = [];
+            // 3. 状态管理变量
+            let activeImageCount = 0;             // 当前活跃（正在显示或淡出）的图片数量
+            let recentUsedIndexes = [];           // 最近使用过的图片索引（用于简单去重）
+            const RECENT_MEMORY_SIZE = 4;         // 记忆最近几张图不重复
             
-            // 获取一个未使用过的随机图片索引
-            function getUniqueRandomIndex() {
-                if (usedIndexes.length >= imageUrls.length) {
-                    // 如果所有图片都已使用过，重置列表
-                    usedIndexes = [];
+            // 4. 获取一个可用的随机图片索引（改进的去重逻辑）
+            function getRandomImageIndex() {
+                let availableIndexes = [];
+                
+                // 找出所有可能有效的索引（简单实现：全部索引）
+                for (let i = 0; i < imageUrls.length; i++) {
+                    availableIndexes.push(i);
                 }
                 
-                let randomIndex;
-                let attempts = 0;
-                const maxAttempts = 20; // 防止无限循环
-                
-                do {
-                    randomIndex = Math.floor(Math.random() * imageUrls.length);
-                    attempts++;
-                } while (usedIndexes.includes(randomIndex) && attempts < maxAttempts);
-                
-                // 如果尝试次数过多，随机选择一个
-                if (attempts >= maxAttempts) {
-                    randomIndex = Math.floor(Math.random() * imageUrls.length);
+                // 如果可用图片很多，尝试避免使用最近显示过的
+                if (availableIndexes.length > RECENT_MEMORY_SIZE) {
+                    const filtered = availableIndexes.filter(idx => !recentUsedIndexes.includes(idx));
+                    if (filtered.length > 0) {
+                        availableIndexes = filtered;
+                    }
                 }
                 
-                usedIndexes.push(randomIndex);
-                return randomIndex;
+                // 随机选择
+                const selectedIndex = availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
+                
+                // 更新最近使用记录
+                recentUsedIndexes.push(selectedIndex);
+                if (recentUsedIndexes.length > RECENT_MEMORY_SIZE) {
+                    recentUsedIndexes.shift(); // 移除最旧的记录
+                }
+                
+                return selectedIndex;
             }
             
-            // 创建显示图片的函数（核心修改）
-            function createFloatingImage() {
-                // 获取一个不重复的随机图片索引
-                const randomIndex = getUniqueRandomIndex();
-                const randomUrl = imageUrls[randomIndex];
+            // 5. 显示单张图片的核心函数
+            function showSingleImage() {
+                // 如果当前活跃图片数已达上限，则跳过本次
+                if (activeImageCount >= MAX_CONCURRENT_IMAGES) {
+                    scheduleNextImage();
+                    return;
+                }
                 
-                // 创建图片元素
+                const imgIndex = getRandomImageIndex();
+                const imgUrl = imageUrls[imgIndex];
+                
                 const img = document.createElement('img');
                 img.className = 'floating-image';
                 img.alt = 'Minecraft图片';
                 
-                // **强制设置显示尺寸，忽略原图大小**
-                // 统一显示为 120px 宽度，高度自适应（稍微增大尺寸）
-                const displayWidth = 120; // 增大尺寸以更好显示
-                img.style.width = `${displayWidth}px`;
-                img.style.height = 'auto'; 
-                img.style.maxWidth = `${displayWidth}px`; // 双重保障
+                // 设置尺寸和位置（不倾斜）
+                img.style.width = `${DISPLAY_WIDTH}px`;
+                img.style.height = 'auto';
+                img.style.maxWidth = `${DISPLAY_WIDTH}px`;
                 
-                // 随机设置位置（避开边缘）
-                const margin = 100; // 边距相应增大
+                const margin = 100;
                 const x = margin + Math.random() * (window.innerWidth - 2 * margin);
                 const y = margin + Math.random() * (window.innerHeight - 2 * margin);
-                
                 img.style.left = `${x}px`;
                 img.style.top = `${y}px`;
                 
-                // 添加到页面
                 document.body.appendChild(img);
+                activeImageCount++; // 增加活跃计数
                 
-                // **添加图片加载监听，失败则移除并重新尝试**
+                // 图片加载成功与失败的处理
                 img.onload = function() {
-                    // 图片加载成功，开始渐入动画
+                    // 成功：淡入 -> 等待1秒 -> 淡出 -> 移除
+                    setTimeout(() => { img.style.opacity = '0.8'; }, 100);
+                    
                     setTimeout(() => {
-                        img.style.opacity = '0.8'; // 渐入
-                        
-                        // 1秒后开始淡出
+                        img.style.opacity = '0';
                         setTimeout(() => {
-                            img.style.opacity = '0'; // 渐出
-                            
-                            // 淡出后移除图片
-                            setTimeout(() => {
-                                if (img.parentNode) {
-                                    img.parentNode.removeChild(img);
-                                }
-                            }, 1000); // 等待淡出动画完成（与可见时间一致）
-                        }, visibleTime);
-                    }, 100);
+                            if (img.parentNode) {
+                                img.parentNode.removeChild(img);
+                            }
+                            activeImageCount--; // 减少活跃计数
+                        }, 1000);
+                    }, VISIBLE_TIME);
                 };
                 
                 img.onerror = function() {
-                    // **图片加载失败，从已使用列表中移除该索引，以便可以再次尝试其他图片**
-                    const indexToRemove = usedIndexes.indexOf(randomIndex);
-                    if (indexToRemove > -1) {
-                        usedIndexes.splice(indexToRemove, 1);
-                    }
-                    
-                    // 静默移除该元素
-                    console.log(`图片加载失败，已跳过: ${randomUrl}`); // 控制台可查看日志
+                    // 失败：静默移除，不执行动画
+                    console.log(`图片加载失败，已跳过: ${imgUrl}`);
                     if (img.parentNode) {
                         img.parentNode.removeChild(img);
                     }
+                    activeImageCount--; // 减少活跃计数
                     
-                    // 如果图片加载失败，立即尝试显示另一张图片
-                    setTimeout(createFloatingImage, 500);
+                    // 从最近使用记录中移除这个失败的索引，以便它可能被其他有效链接替代
+                    const failIndex = recentUsedIndexes.indexOf(imgIndex);
+                    if (failIndex > -1) {
+                        recentUsedIndexes.splice(failIndex, 1);
+                    }
                 };
                 
-                // **最后设置src，触发加载（或错误）事件**
-                img.src = randomUrl;
+                img.src = imgUrl;
                 
-                // 设置下一次显示（无论本次成功与否）
-                const nextShowDelay = 2000 + Math.random() * 4000; // 随机2-6秒后再次显示
-                setTimeout(createFloatingImage, nextShowDelay);
+                // 无论本次成功与否，都按固定节奏计划下一张
+                scheduleNextImage();
             }
             
-            // 初始创建多个图片
-            for (let i = 0; i < maxImages; i++) {
-                // 随机延迟开始，避免所有图片同时出现
-                const delay = Math.random() * 3000;
-                setTimeout(createFloatingImage, delay);
-            }
-            
-            // 窗口大小改变时，移除所有浮动图片并重新开始
-            window.addEventListener('resize', function() {
-                document.querySelectorAll('.floating-image').forEach(img => {
-                    img.parentNode.removeChild(img);
-                });
+            // 6. 计划下一张图片的显示（统一调度入口，防止定时器堆积）
+            let isScheduled = false;
+            function scheduleNextImage() {
+                // 防止重复调度
+                if (isScheduled) return;
                 
-                // 重置已使用索引
-                usedIndexes = [];
-                
-                // 重新创建图片
-                for (let i = 0; i < maxImages; i++) {
-                    const delay = Math.random() * 3000;
-                    setTimeout(createFloatingImage, delay);
-                }
-            });
-        });
-    </script>
-</body>
-</html>
+                isScheduled = true;
+                setTimeout(() => {
+                    isScheduled = false;
+                    showSingleImage();
+                }, NEXT_IMAGE_DELAY); // 固定的间隔，控制显示节奏
