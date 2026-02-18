@@ -25,7 +25,7 @@
             background-repeat: no-repeat;
             position: relative;
             min-height: 100vh;
-            overflow-x: hidden; /* 防止水平滚动条 */
+            overflow-x: hidden;
         }
         .container {
             max-width: 800px;
@@ -35,17 +35,17 @@
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             position: relative;
-            z-index: 1; /* 确保内容在图片雨上方 */
+            z-index: 1;
         }
-        /* 【新增】图片雨样式 */
+        /* 图片雨样式 - 图层置顶 */
         .falling-image {
             position: fixed;
-            top: -100px; /* 从屏幕上方之外开始 */
-            width: 50px; /* 图片宽度，可根据需要调整 */
+            top: -100px;
+            width: 50px;
             height: auto;
-            pointer-events: none; /* 确保图片不会干扰点击下面的按钮 */
-            z-index: 0; /* 置于背景和内容层之间 */
-            opacity: 0.7; /* 半透明，营造柔和效果 */
+            pointer-events: none;
+            z-index: 9999; /* 最高图层 */
+            opacity: 0.7;
         }
         /* 特别感谢按钮样式 */
         .special-thanks-button {
@@ -91,7 +91,6 @@
         .qq-group-link:hover {
             background-color: #0d99d2;
         }
-        /* 新增友服QQ群按钮样式 */
         .friend-server-link {
             display: inline-block;
             background-color: #ffc107;
@@ -133,7 +132,6 @@
             gap: 20px;
             margin-bottom: 15px;
         }
-        /* 邮箱信息样式 */
         .email-info {
             position: fixed;
             left: 20px;
@@ -146,7 +144,6 @@
             z-index: 1000;
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
-        /* B站账号按钮样式 */
         .bilibili-button {
             position: fixed;
             right: 20px;
@@ -173,7 +170,6 @@
         .bilibili-button:active {
             transform: translateY(0);
         }
-        /* B站图标样式 */
         .bilibili-icon {
             width: 20px;
             height: 20px;
@@ -202,7 +198,6 @@
             top: 9px;
             left: 7px;
         }
-        /* 响应式设计 */
         @media (max-width: 768px) {
             .email-info {
                 left: 10px;
@@ -228,7 +223,6 @@
             .qq-group-link, .friend-server-link {
                 margin: 0;
             }
-            /* 移动端减小图片大小 */
             .falling-image {
                 width: 35px;
             }
@@ -265,21 +259,19 @@
         腐竹的B站账号
     </a>
 
-    <!-- 【新增】图片雨特效脚本 -->
+    <!-- 图片雨特效脚本 -->
     <script>
-        // 配置参数
-        const totalImages = 32; // 图片总数
-        const fallSpeedMin = 3; // 最小下落速度 (像素/帧)
-        const fallSpeedMax = 8; // 最大下落速度 (像素/帧)
-        const spinSpeedMin = -2; // 最小旋转速度 (度/帧)
-        const spinSpeedMax = 2;  // 最大旋转速度 (度/帧)
-        const spawnInterval = 300; // 生成新图片的间隔时间(毫秒)
-        const imageBasePath = './'; // 图片所在路径，假设与网页同目录。如果需要，可改为 'images/'
+        const totalImages = 32;
+        const fallSpeedMin = 3;
+        const fallSpeedMax = 8;
+        const spinSpeedMin = -2;
+        const spinSpeedMax = 2;
+        const spawnInterval = 300;
+        const imageBasePath = './';
 
         let imagesLoaded = 0;
-        const imagePool = []; // 预加载的图片对象数组
+        const imagePool = [];
 
-        // 1. 预加载所有图片
         function preloadImages() {
             for (let i = 1; i <= totalImages; i++) {
                 const img = new Image();
@@ -293,7 +285,7 @@
                 };
                 img.onerror = () => {
                     console.warn(`图片加载失败: ${img.src}`);
-                    imagesLoaded++; // 即使失败也计数，避免阻塞
+                    imagesLoaded++;
                     if (imagesLoaded === totalImages) {
                         startRaining();
                     }
@@ -302,44 +294,34 @@
             }
         }
 
-        // 2. 开始下雨效果
         function startRaining() {
-            // 定期创建新的下落图片
             setInterval(createFallingImage, spawnInterval);
-            // 初始创建一些图片
             for (let i = 0; i < 10; i++) {
                 setTimeout(() => createFallingImage(), i * 100);
             }
         }
 
-        // 3. 创建单个下落图片元素并设置动画
         function createFallingImage() {
             if (imagePool.length === 0) return;
 
-            // 随机选择一张图片
             const randomIndex = Math.floor(Math.random() * imagePool.length);
             const imgSource = imagePool[randomIndex];
 
-            // 创建图片元素
             const imgElement = document.createElement('img');
             imgElement.className = 'falling-image';
             imgElement.src = imgSource.src;
             imgElement.alt = 'Mod Icon';
 
-            // 随机初始位置（水平方向）
             const startX = Math.random() * (window.innerWidth - 50);
             imgElement.style.left = `${startX}px`;
 
-            // 随机属性
             const fallSpeed = fallSpeedMin + Math.random() * (fallSpeedMax - fallSpeedMin);
             const spinSpeed = spinSpeedMin + Math.random() * (spinSpeedMax - spinSpeedMin);
             let currentRotation = Math.random() * 360;
-            let currentY = -100; // 从顶部外开始
+            let currentY = -100;
 
-            // 将图片添加到页面
             document.body.appendChild(imgElement);
 
-            // 动画函数
             function animate() {
                 currentY += fallSpeed;
                 currentRotation += spinSpeed;
@@ -347,21 +329,17 @@
                 imgElement.style.top = `${currentY}px`;
                 imgElement.style.transform = `rotate(${currentRotation}deg)`;
 
-                // 如果图片移出屏幕底部，则移除它
                 if (currentY > window.innerHeight) {
                     document.body.removeChild(imgElement);
-                    return; // 停止该图片的动画
+                    return;
                 }
 
-                // 继续动画
                 requestAnimationFrame(animate);
             }
 
-            // 开始这个图片的动画
             requestAnimationFrame(animate);
         }
 
-        // 页面加载完成后开始预加载图片
         window.addEventListener('DOMContentLoaded', preloadImages);
     </script>
 </body>
