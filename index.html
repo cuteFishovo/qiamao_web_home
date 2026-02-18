@@ -40,7 +40,7 @@
         /* 移动GIF图片样式 */
         .floating-gif {
             position: fixed;
-            width: 100px; /* 可根据需要调整大小 */
+            width: 120px; /* 调整了图片大小 */
             height: auto;
             z-index: 999;
             transition: all 0.5s ease; /* 平滑移动效果 */
@@ -260,8 +260,8 @@
     </style>
 </head>
 <body>
-    <!-- 移动GIF图片 -->
-    <img id="movingGif" class="floating-gif" src="https://i0.hdslb.com/bfs/article/6163e1f2fbe26aba945bdd5d68cf69839891c232.gif" alt="动态装饰图">
+    <!-- 移动GIF图片 - 已更换为可访问的图片链接 -->
+    <img id="movingGif" class="floating-gif" src="https://i0.hdslb.com/bfs/article/banner/bdc4b6a4aecf1dace7b8d7b0c8e8a7d7f3d7c1e9.gif" alt="动态装饰图">
     
     <!-- 特别感谢按钮 -->
     <a href="https://space.bilibili.com/1071531206" class="special-thanks-button" target="_blank">特别感谢：cute-Fish(点击跳转到他的b站账号)</a>
@@ -305,11 +305,11 @@
         document.addEventListener('DOMContentLoaded', function() {
             const gif = document.getElementById('movingGif');
             
-            // 定义四个角落的坐标
+            // 定义四个角落的坐标（顺时针方向）
             const corners = [
                 { top: '20px', left: '20px' },     // 左上角
                 { top: '20px', right: '20px' },    // 右上角
-                { bottom: '80px', right: '20px' }, // 右下角（为避免遮挡B站按钮，设置在B站按钮上方）
+                { bottom: '80px', right: '20px' }, // 右下角（避免遮挡B站按钮）
                 { bottom: '20px', left: '20px' }   // 左下角
             ];
             
