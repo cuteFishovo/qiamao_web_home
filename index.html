@@ -83,7 +83,7 @@
             box-shadow: 0 5px 25px rgba(0,0,0,0.2);
             z-index: 10001;
             display: none;
-            width: 350px;
+            width: 380px; /* 稍微加宽以容纳更多选项 */
             max-width: 90%;
             border: 2px solid #4CAF50;
         }
@@ -110,11 +110,11 @@
             display: block;
             width: 100%;
             padding: 12px 15px;
-            margin: 10px 0;
+            margin: 8px 0; /* 稍微减小上下间距以容纳更多选项 */
             background-color: #f8f9fa;
             border: 2px solid #e9ecef;
             border-radius: 5px;
-            font-size: 16px;
+            font-size: 15px; /* 稍微减小字体以容纳更多文字 */
             cursor: pointer;
             transition: all 0.3s;
             text-align: center;
@@ -127,6 +127,22 @@
             background-color: #4CAF50;
             color: white;
             border-color: #45a049;
+        }
+        /* 新增：超级暴雨的特殊样式 */
+        .rain-intensity-option.super-storm {
+            background-color: #dc3545;
+            color: white;
+            border-color: #dc3545;
+            font-weight: bold;
+        }
+        .rain-intensity-option.super-storm:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+        .rain-intensity-option.super-storm.selected {
+            background-color: #dc3545;
+            border-color: #bd2130;
+            box-shadow: 0 0 10px rgba(220, 53, 69, 0.5);
         }
         .rain-intensity-option.disabled {
             background-color: #f8f9fa;
@@ -362,7 +378,7 @@
                 padding: 10px 15px;
             }
             .settings-panel {
-                width: 300px;
+                width: 320px;
                 padding: 20px;
             }
             .special-thanks-button {
@@ -385,6 +401,10 @@
             .falling-image {
                 width: 35px;
             }
+            .rain-intensity-option {
+                font-size: 14px;
+                padding: 10px 12px;
+            }
         }
     </style>
 </head>
@@ -405,6 +425,11 @@
         <button class="rain-intensity-option selected" data-intensity="medium">中雨（默认）</button>
         <button class="rain-intensity-option" data-intensity="heavy">大雨（密集度增加30%）</button>
         <button class="rain-intensity-option" data-intensity="storm">暴雨（密集度增加100%）</button>
+        <button class="rain-intensity-option super-storm" data-intensity="superStorm">超级牛逼大暴雨（密集度增加310%）</button>
+        
+        <p style="font-size: 12px; color: #999; text-align: center; margin-top: 15px;">
+            注意：高密度设置可能影响页面性能，请根据设备性能选择
+        </p>
     </div>
     
     <!-- 特别感谢按钮 -->
@@ -455,12 +480,13 @@
         const spinSpeedMax = 2;
         const imageBasePath = './';
 
-        // 密集度设置
+        // 密集度设置 - 添加超级牛逼大暴雨选项（比默认密集度高310%）
         const intensitySettings = {
-            light: 1200,    // 小雨：间隔1200ms（默认300ms * 4）
+            light: 1200,    // 小雨：间隔1200ms（默认300ms * 4，减少75%）
             medium: 300,    // 中雨（默认）：间隔300ms
-            heavy: 231,     // 大雨：间隔231ms（300 / 1.3）
-            storm: 150      // 暴雨：间隔150ms（300 / 2）
+            heavy: 231,     // 大雨：间隔231ms（300 / 1.3，增加30%）
+            storm: 150,     // 暴雨：间隔150ms（300 / 2，增加100%）
+            superStorm: 73  // 超级牛逼大暴雨：间隔73ms（300 / 4.1，增加310%）
         };
 
         let currentIntensity = 'medium'; // 默认密度
@@ -506,8 +532,9 @@
             rainIntervalId = setInterval(createFallingImage, spawnInterval);
             
             // 初始创建一些图片
-            for (let i = 0; i < 10; i++) {
-                setTimeout(() => createFallingImage(), i * 100);
+            const initialCount = Math.min(20, Math.floor(300 / spawnInterval) * 5);
+            for (let i = 0; i < initialCount; i++) {
+                setTimeout(() => createFallingImage(), i * 50);
             }
         }
 
@@ -542,6 +569,11 @@
             startRaining();
             
             console.log(`已切换为${getIntensityName(intensity)}模式，图片生成间隔：${spawnInterval}ms`);
+            
+            // 如果是超级暴雨，添加性能警告
+            if (intensity === 'superStorm') {
+                console.warn('警告：超级暴雨模式对性能要求较高，如果感到卡顿，请切换为较低密度设置。');
+            }
         }
 
         // 获取密度名称
@@ -551,6 +583,7 @@
                 case 'medium': return '中雨';
                 case 'heavy': return '大雨';
                 case 'storm': return '暴雨';
+                case 'superStorm': return '超级牛逼大暴雨';
                 default: return '中雨';
             }
         }
@@ -567,7 +600,15 @@
             imgElement.src = imgSource.src;
             imgElement.alt = 'Mod Icon';
 
-            const startX = Math.random() * (window.innerWidth - 50);
+            // 对于超级暴雨模式，随机化图片大小以增加视觉效果
+            if (currentIntensity === 'superStorm') {
+                const size = 30 + Math.random() * 40; // 30px 到 70px 之间
+                imgElement.style.width = `${size}px`;
+            } else {
+                imgElement.style.width = '50px';
+            }
+
+            const startX = Math.random() * (window.innerWidth - 100);
             imgElement.style.left = `${startX}px`;
 
             const fallSpeed = fallSpeedMin + Math.random() * (fallSpeedMax - fallSpeedMin);
