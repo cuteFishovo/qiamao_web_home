@@ -116,9 +116,42 @@
             font-size: 16px;
             margin-top: 15px;
             transition: background-color 0.3s;
+            margin-right: 10px; /* 为旁边的新按钮留出间距 */
         }
         .mystery-game-link:hover {
             background-color: #218838;
+        }
+        /* 新增PCL2按钮样式 */
+        .pcl2-download-link {
+            display: inline-flex; /* 使用flex以便图标和文字对齐 */
+            align-items: center;
+            background-color: #6f42c1; /* 紫色，区别于其他按钮 */
+            color: white;
+            padding: 12px 20px 12px 15px; /* 左内边距稍小，为图标留位置 */
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-top: 15px;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        .pcl2-download-link:hover {
+            background-color: #5a32a3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .pcl2-download-link:active {
+            transform: translateY(0);
+        }
+        .pcl2-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            background-image: url('https://tse2-mm.cn.bing.net/th/id/OIP-C.YKSgv09nRJYZpxyjAZg7HgAAAA?w=116&h=120&c=7&r=0&o=7&cb=defcachec2&dpr=1.5&pid=1.7&rm=3');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
         }
         .button-container {
             display: flex;
@@ -131,6 +164,14 @@
             justify-content: center;
             gap: 20px;
             margin-bottom: 15px;
+            flex-wrap: wrap; /* 允许按钮在窄屏下换行 */
+        }
+        .recommend-text {
+            text-align: center;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            color: #555;
+            font-size: 14px;
         }
         .email-info {
             position: fixed;
@@ -223,6 +264,11 @@
             .qq-group-link, .friend-server-link {
                 margin: 0;
             }
+            .mystery-game-link, .pcl2-download-link {
+                margin: 5px 0; /* 在移动端改为上下排列时的间距 */
+                width: 90%; /* 让按钮在移动端变宽 */
+                justify-content: center;
+            }
             .falling-image {
                 width: 35px;
             }
@@ -239,15 +285,25 @@
         <p>复制群号973937570或点击蓝色按钮自动跳转</p>
         <p>你也可以点击按钮进入友服qq群（已关服，静待复活）</p>
         
+        <!-- 新增：推荐使用PCL2的提示文字 -->
+        <p class="recommend-text">推荐使用PCL2启动器启动客户端</p>
+        
         <div class="button-container">
             <div class="button-row">
                 <a href="https://qm.qq.com/q/nkP2rtU2Ag" class="qq-group-link">服务器QQ群</a>
                 <a href="https://qm.qq.com/q/970547713" class="friend-server-link">友服QQ群跳转（已关服，静待复活）</a>
             </div>
-            <a href="https://qiamaoserver0721.top/qiamao_mini-game/index.html" class="mystery-game-link">神秘小游戏</a>
+            <!-- 修改：将两个按钮放在同一行 -->
+            <div class="button-row">
+                <a href="https://qiamaoserver0721.top/qiamao_mini-game/index.html" class="mystery-game-link">神秘小游戏</a>
+                <!-- 新增：PCL2下载按钮 -->
+                <a href="https://www.mcbbs.net/thread-1141170-1-1.html" class="pcl2-download-link" target="_blank">
+                    <span class="pcl2-icon"></span>
+                    前往PCL2官方下载地址
+                </a>
+            </div>
         </div>
-        
-        <p>还有神秘小游戏可以玩(</p>
+        <!-- 原“还有神秘小游戏可以玩(”的文本已被移除 -->
     </div>
     
     <!-- 左下角邮箱信息 -->
