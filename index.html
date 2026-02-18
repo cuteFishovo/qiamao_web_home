@@ -37,14 +37,27 @@
             position: relative;
             z-index: 1;
         }
-        /* 移动GIF图片样式 */
-        .floating-gif {
+        /* 随机显示图片的样式 */
+        .floating-image {
+            position: fixed;
+            z-index: 500;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1.5s ease-in-out;
+            max-width: 150px;
+            max-height: 150px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        /* 静态GIF图片样式 */
+        .static-gif {
             position: fixed;
             width: 120px; /* 调整了图片大小 */
             height: auto;
             z-index: 999;
-            transition: all 0.5s ease; /* 平滑移动效果 */
             pointer-events: none; /* 防止图片干扰点击 */
+            top: 20px; /* 固定在左上角 */
+            left: 20px;
         }
         /* 特别感谢按钮样式 */
         .special-thanks-button {
@@ -253,15 +266,21 @@
                 margin-left: 0;
                 margin-top: 10px;
             }
-            .floating-gif {
+            .static-gif {
                 width: 80px; /* 移动端缩小图片尺寸 */
+                top: 10px;
+                left: 10px;
+            }
+            .floating-image {
+                max-width: 100px;
+                max-height: 100px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- 移动GIF图片 - 已更换为可访问的图片链接 -->
-    <img id="movingGif" class="floating-gif" src="https://i0.hdslb.com/bfs/article/banner/bdc4b6a4aecf1dace7b8d7b0c8e8a7d7f3d7c1e9.gif" alt="动态装饰图">
+    <!-- 静态GIF图片 - 已移除移动功能 -->
+    <img id="staticGif" class="static-gif" src="https://i0.hdslb.com/bfs/article/banner/bdc4b6a4aecf1dace7b8d7b0c8e8a7d7f3d7c1e9.gif" alt="装饰图">
     
     <!-- 特别感谢按钮 -->
     <a href="https://space.bilibili.com/1071531206" class="special-thanks-button" target="_blank">特别感谢：cute-Fish(点击跳转到他的b站账号)</a>
@@ -303,46 +322,123 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const gif = document.getElementById('movingGif');
-            
-            // 定义四个角落的坐标（顺时针方向）
-            const corners = [
-                { top: '20px', left: '20px' },     // 左上角
-                { top: '20px', right: '20px' },    // 右上角
-                { bottom: '80px', right: '20px' }, // 右下角（避免遮挡B站按钮）
-                { bottom: '20px', left: '20px' }   // 左下角
+            // 图片链接数组（根据您提供的链接列表）
+            const imageUrls = [
+                "https://i.mcmod.cn/editor/upload/20200424/1587740157_79030_gyLw.webp",
+                "https://i.mcmod.cn/editor/upload/20200430/1588240369_79030_FLjg.webp",
+                "https://i.mcmod.cn/item/icon/128x128/0/9150.png?v=23",
+                // 第4个链接为空，跳过
+                "https://i.mcmod.cn/item/icon/128x128/11/118006.png?v=4",
+                "https://i.mcmod.cn/item/icon/128x128/4/45548.png?v=2",
+                "https://www.mcmod.cn/pages/class/images/cover/20170619/1497866262_12391_RoDf.jpg",
+                "https://i.mcmod.cn/editor/upload/20200714/1594739719_79030_gQqJ.webp",
+                "https://i.mcmod.cn/class/cover/20211226/1640486226_21294_Qphm.jpg@480x300.jpg",
+                "https://i.mcmod.cn/class/cover/20200714/1594737462_79030_jOwZ.jpg@480x300.jpg",
+                "https://i.mcmod.cn/item/icon/128x128/11/110711.png?v=1",
+                "https://i.mcmod.cn/editor/upload/20210402/1617373596_39045_ydUP.webp",
+                "https://i.mcmod.cn/class/cover/20201002/1601606492_75928_iTSw.jpg@480x300.jpg",
+                "https://i.mcmod.cn/editor/upload/20240327/1711518959_281342_QtyQ.webp",
+                "https://i.mcmod.cn/class/cover/20240917/1726552508_49791_WjfD.jpg@480x300.jpg",
+                "https://i.mcmod.cn/class/cover/20210811/1628651435_4336_TlIA.jpg@480x300.jpg",
+                "https://i.mcmod.cn/class/cover/20201017/1602936302_79030_uXoy.jpg@480x300.jpg",
+                // 第18个链接为空，跳过
+                "https://i.mcmod.cn/editor/upload/20240207/1707314148_134482_Ysxg.webp",
+                "https://i.mcmod.cn/class/cover/20200715/1594774694_79030_GWUP.jpg@480x300.jpg",
+                "https://i.mcmod.cn/class/cover/20200805/1596622593_79030_ggIm.jpg@480x300.jpg",
+                "https://i.mcmod.cn/class/cover/20200715/1594746531_79030_EDmK.jpg@480x300.jpg",
+                "https://i.mcmod.cn/class/cover/20230506/1683366517_2_dRGg.jpg@480x300.jpg",
+                "https://i.mcmod.cn/item/icon/128x128/0/8320.png?v=3"
             ];
+
+            // 创建图片元素
+            const images = [];
+            const maxImages = 8; // 同时显示的最大图片数量
+            const visibleTime = 2500; // 可见时间2.5秒（单位：毫秒）
             
-            // 当前角落索引
-            let currentCorner = 0;
-            
-            // 移动到指定角落的函数
-            function moveToCorner(index) {
-                // 清除所有位置属性
-                gif.style.top = '';
-                gif.style.left = '';
-                gif.style.right = '';
-                gif.style.bottom = '';
+            // 预加载所有图片
+            imageUrls.forEach(url => {
+                const img = new Image();
+                img.src = url;
+                img.style.display = 'none';
+                document.body.appendChild(img);
+            });
+
+            // 创建显示图片的函数
+            function createFloatingImage() {
+                // 随机选择一个图片URL
+                const randomUrl = imageUrls[Math.floor(Math.random() * imageUrls.length)];
                 
-                // 设置新位置
-                const corner = corners[index];
-                Object.keys(corner).forEach(key => {
-                    gif.style[key] = corner[key];
-                });
+                // 创建图片元素
+                const img = document.createElement('img');
+                img.className = 'floating-image';
+                img.src = randomUrl;
+                img.alt = 'Minecraft图片';
+                
+                // 随机设置位置（避开边缘）
+                const margin = 100;
+                const x = margin + Math.random() * (window.innerWidth - 2 * margin);
+                const y = margin + Math.random() * (window.innerHeight - 2 * margin);
+                
+                img.style.left = `${x}px`;
+                img.style.top = `${y}px`;
+                
+                // 随机设置大小（50px到150px之间）
+                const size = 50 + Math.random() * 100;
+                img.style.width = `${size}px`;
+                img.style.height = 'auto';
+                
+                // 随机旋转角度（-30度到30度）
+                const rotation = -30 + Math.random() * 60;
+                img.style.transform = `rotate(${rotation}deg)`;
+                
+                // 添加到页面
+                document.body.appendChild(img);
+                
+                // 渐隐渐显动画
+                let isVisible = false;
+                
+                // 显示图片
+                setTimeout(() => {
+                    img.style.opacity = '0.8';
+                    isVisible = true;
+                    
+                    // 2.5秒后开始淡出
+                    setTimeout(() => {
+                        img.style.opacity = '0';
+                        isVisible = false;
+                        
+                        // 淡出后移除图片
+                        setTimeout(() => {
+                            if (img.parentNode) {
+                                img.parentNode.removeChild(img);
+                            }
+                        }, 1500); // 等待淡出动画完成
+                    }, visibleTime);
+                }, 100);
+                
+                // 设置下一次显示
+                const nextShowDelay = 3000 + Math.random() * 7000; // 随机3-10秒后再次显示
+                setTimeout(createFloatingImage, nextShowDelay);
             }
             
-            // 初始位置
-            moveToCorner(currentCorner);
+            // 初始创建多个图片
+            for (let i = 0; i < maxImages; i++) {
+                // 随机延迟开始，避免所有图片同时出现
+                const delay = Math.random() * 5000;
+                setTimeout(createFloatingImage, delay);
+            }
             
-            // 每0.7秒移动到下一个角落
-            setInterval(function() {
-                currentCorner = (currentCorner + 1) % 4; // 循环0-3
-                moveToCorner(currentCorner);
-            }, 700); // 0.7秒 = 700毫秒
-            
-            // 窗口大小改变时重新调整位置
+            // 窗口大小改变时，移除所有浮动图片
             window.addEventListener('resize', function() {
-                moveToCorner(currentCorner);
+                document.querySelectorAll('.floating-image').forEach(img => {
+                    img.parentNode.removeChild(img);
+                });
+                
+                // 重新创建图片
+                for (let i = 0; i < maxImages; i++) {
+                    const delay = Math.random() * 5000;
+                    setTimeout(createFloatingImage, delay);
+                }
             });
         });
     </script>
