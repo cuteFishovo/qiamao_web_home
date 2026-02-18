@@ -552,7 +552,7 @@
         
         <!-- 新增：物理效果开关 -->
         <div class="physics-toggle-container">
-            <span class="physics-toggle-label">启用物理效果（BETA，bug多还卡）</span>
+            <span class="physics-toggle-label">（BETA）启用物理效果（拥有超多bug）</span>
             <label class="physics-toggle">
                 <input type="checkbox" id="physicsToggle">
                 <span class="physics-slider"></span>
@@ -796,6 +796,37 @@
             physicsAnimationId = requestAnimationFrame(physicsUpdate);
         }
 
+        // 重新启动下落动画（当物理效果关闭时调用）
+        function restartFallingAnimation(imgElement, startX, startY, startRotation) {
+            if (!imgElement || !imgElement.parentNode) return;
+            
+            const fallSpeed = fallSpeedMin + Math.random() * (fallSpeedMax - fallSpeedMin);
+            const spinSpeed = spinSpeedMin + Math.random() * (spinSpeedMax - spinSpeedMin);
+            let currentRotation = startRotation;
+            let currentY = startY;
+            
+            function animate() {
+                currentY += fallSpeed;
+                currentRotation += spinSpeed;
+                
+                imgElement.style.top = `${currentY}px`;
+                imgElement.style.transform = `rotate(${currentRotation}deg)`;
+                
+                // 继续下落直到完全移出屏幕
+                if (currentY > window.innerHeight + 100) {
+                    // 图片完全移出屏幕后移除
+                    if (imgElement.parentNode) {
+                        document.body.removeChild(imgElement);
+                    }
+                    return;
+                }
+                
+                requestAnimationFrame(animate);
+            }
+            
+            requestAnimationFrame(animate);
+        }
+
         // 切换物理效果
         function togglePhysics(enabled) {
             physicsEnabled = enabled;
@@ -839,10 +870,26 @@
                 // 停止物理动画
                 stopPhysicsAnimation();
                 
-                // 移除物理效果类并清理物理数据
-                physicsImages.forEach(img => {
-                    if (img.element && img.element.classList) {
-                        img.element.classList.remove('physics-enabled');
+                // 为所有物理图片重新启动下落动画
+                const physicsImagesCopy = [...physicsImages]; // 创建副本，因为原数组将被清空
+                
+                physicsImagesCopy.forEach(imgData => {
+                    if (imgData.element && imgData.physicsData) {
+                        // 移除物理类
+                        imgData.element.classList.remove('physics-enabled');
+                        
+                        // 获取当前位置和旋转
+                        const currentX = imgData.physicsData.x;
+                        const currentY = imgData.physicsData.y;
+                        const currentRotation = imgData.physicsData.rotation;
+                        
+                        // 重新启动下落动画
+                        restartFallingAnimation(
+                            imgData.element, 
+                            currentX, 
+                            currentY, 
+                            currentRotation
+                        );
                     }
                 });
                 
