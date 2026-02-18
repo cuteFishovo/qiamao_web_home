@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>欢迎来到qiamao服务器网站</title>
     
-    <!-- 网站图标设置 -->
     <link rel="icon" type="image/x-icon" href="icon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="icon.ico">
     <link rel="icon" type="image/png" sizes="16x16" href="icon.ico">
@@ -18,7 +17,6 @@
             margin: 0;
             padding: 20px;
             background-color: #f5f5f5;
-            /* 修改处：将背景图片更改为 qqqq.jpg */
             background-image: url("qqqq.jpg");
             background-size: cover;
             background-position: center;
@@ -28,57 +26,53 @@
             min-height: 100vh;
             overflow-x: hidden;
         }
-        /* 新增：仿iPhone 14 Pro灵动岛样式的欢迎弹窗 - 修改文字为粉色 */
         .welcome-dynamic-island {
             position: fixed;
-            top: 20px; /* 不贴顶，留出20px间距 */
+            top: 20px;
             left: 50%;
-            transform: translateX(-50%) translateY(-100px); /* 初始位置在屏幕外上方 */
-            background: rgba(255, 255, 255, 0.15); /* 半透明背景 */
-            backdrop-filter: blur(20px); /* 毛玻璃效果 */
-            -webkit-backdrop-filter: blur(20px); /* Safari 支持 */
+            transform: translateX(-50%) translateY(-100px);
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             padding: 12px 30px;
-            border-radius: 50px; /* 椭圆形状，类似灵动岛 */
-            color: #FF69B4; /* 修改处：将文字颜色从白色改为粉色 (#FF69B4) */
+            border-radius: 50px;
+            color: #FF69B4;
             font-size: 18px;
             font-weight: bold;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
             box-shadow: 
                 0 10px 30px rgba(0, 0, 0, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2); /* 内外阴影增强立体感 */
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            z-index: 10002; /* 确保在最上层 */
-            opacity: 0; /* 初始完全透明 */
-            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); /* 弹性惯性动画 */
-            white-space: nowrap; /* 防止文字换行 */
-            max-width: 80%; /* 最大宽度限制 */
+            z-index: 10002;
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            white-space: nowrap;
+            max-width: 80%;
             overflow: hidden;
-            text-overflow: ellipsis; /* 文字过长时显示省略号 */
+            text-overflow: ellipsis;
         }
-        /* 显示状态 */
         .welcome-dynamic-island.show {
-            transform: translateX(-50%) translateY(0); /* 滑入到指定位置 */
-            opacity: 1; /* 完全显示 */
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
         }
-        /* 隐藏状态 - 向上滑出并淡出 */
         .welcome-dynamic-island.hide {
-            transform: translateX(-50%) translateY(-150px); /* 向上滑出 */
-            opacity: 0; /* 淡出 */
+            transform: translateX(-50%) translateY(-150px);
+            opacity: 0;
         }
-        /* 响应式调整 */
         @media (max-width: 768px) {
             .welcome-dynamic-island {
                 font-size: 16px;
                 padding: 10px 25px;
                 max-width: 90%;
-                top: 15px; /* 移动端间距稍小 */
+                top: 15px;
             }
         }
         @media (max-width: 480px) {
             .welcome-dynamic-island {
                 font-size: 14px;
                 padding: 8px 20px;
-                border-radius: 40px; /* 移动端圆角稍小 */
+                border-radius: 40px;
             }
         }
         .container {
@@ -91,7 +85,6 @@
             position: relative;
             z-index: 1;
         }
-        /* 图片雨样式 - 图层置顶且完全不透明 */
         .falling-image {
             position: fixed;
             top: -100px;
@@ -100,14 +93,12 @@
             pointer-events: none;
             z-index: 9999;
             opacity: 1;
-            transition: transform 0.2s ease-out; /* 添加平滑过渡 */
+            transition: transform 0.2s ease-out;
         }
-        /* 物理效果启用时的样式 */
         .falling-image.physics-enabled {
-            pointer-events: auto; /* 物理图片可以参与碰撞检测 */
+            pointer-events: auto;
             transition: transform 0.1s, top 0.1s, left 0.1s;
         }
-        /* 图片雨设置按钮样式 */
         .settings-button {
             position: fixed;
             top: 20px;
@@ -131,7 +122,6 @@
         .settings-button:active {
             transform: translateY(0);
         }
-        /* 设置面板样式 */
         .settings-panel {
             position: fixed;
             top: 50%;
@@ -143,7 +133,7 @@
             box-shadow: 0 5px 25px rgba(0,0,0,0.2);
             z-index: 10001;
             display: none;
-            width: 400px; /* 稍微加宽以容纳开关 */
+            width: 400px;
             max-width: 90%;
             border: 2px solid #4CAF50;
         }
@@ -170,11 +160,11 @@
             display: block;
             width: 100%;
             padding: 12px 15px;
-            margin: 8px 0; /* 稍微减小上下间距以容纳更多选项 */
+            margin: 8px 0;
             background-color: #f8f9fa;
             border: 2px solid #e9ecef;
             border-radius: 5px;
-            font-size: 15px; /* 稍微减小字体以容纳更多文字 */
+            font-size: 15px;
             cursor: pointer;
             transition: all 0.3s;
             text-align: center;
@@ -188,7 +178,6 @@
             color: white;
             border-color: #45a049;
         }
-        /* 新增：超级暴雨的特殊样式 */
         .rain-intensity-option.super-storm {
             background-color: #dc3545;
             color: white;
@@ -214,7 +203,6 @@
             background-color: #f8f9fa;
             border-color: #ddd;
         }
-        /* 新增：物理开关样式 */
         .physics-toggle-container {
             display: flex;
             justify-content: space-between;
@@ -269,7 +257,6 @@
         input:checked + .physics-slider:before {
             transform: translateX(30px);
         }
-        /* 遮罩层样式 */
         .overlay {
             position: fixed;
             top: 0;
@@ -280,7 +267,6 @@
             z-index: 10000;
             display: none;
         }
-        /* 修改：左下角邮箱信息样式 */
         .email-info {
             position: fixed;
             left: 20px;
@@ -294,7 +280,6 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
             max-width: 300px;
         }
-        /* 新增：右下角跳转按钮容器 */
         .right-bottom-container {
             position: fixed;
             right: 20px;
@@ -306,11 +291,10 @@
             gap: 15px;
             max-width: 300px;
         }
-        /* 修改：特别感谢按钮样式 - 现在在右下角 */
         .special-thanks-button {
             display: block;
             width: 100%;
-            max-width: 280px; /* 适当减小宽度以适应右下角 */
+            max-width: 280px;
             background: linear-gradient(90deg, #FF0000 0%, #FF0000 50%, #007BFF 50%, #007BFF 100%);
             color: white;
             padding: 12px 20px;
@@ -332,7 +316,6 @@
             transform: translateY(0);
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
-        /* 修改：腐竹的B站账号按钮样式 - 现在在右下角 */
         .bilibili-button {
             background-color: #FFD700;
             color: #000;
@@ -358,7 +341,6 @@
         .bilibili-button:active {
             transform: translateY(0);
         }
-        /* 修改：使用图床图片作为B站按钮图标 */
         .bilibili-icon {
             width: 20px;
             height: 20px;
@@ -414,7 +396,6 @@
         .mystery-game-link:hover {
             background-color: #218838;
         }
-        /* 新增PCL2按钮样式 */
         .pcl2-download-link {
             display: inline-flex;
             align-items: center;
@@ -527,18 +508,14 @@
     </style>
 </head>
 <body>
-    <!-- 新增：仿iPhone 14 Pro灵动岛样式的欢迎弹窗 - 文字颜色已改为粉色 -->
     <div class="welcome-dynamic-island" id="welcomeDynamicIsland">
         欢迎来到qiamao服务器网站！！！
     </div>
     
-    <!-- 图片雨设置按钮 -->
     <button class="settings-button" id="settingsButton">图标下雨效果设置</button>
     
-    <!-- 设置面板遮罩层 -->
     <div class="overlay" id="overlay"></div>
     
-    <!-- 设置面板 -->
     <div class="settings-panel" id="settingsPanel">
         <span class="close-button" id="closeButton">✕</span>
         <h3>图标下雨效果设置</h3>
@@ -550,9 +527,8 @@
         <button class="rain-intensity-option" data-intensity="storm">暴雨（密集度增加100%）</button>
         <button class="rain-intensity-option super-storm" data-intensity="superStorm">超级牛逼大暴雨（密集度增加310%）</button>
         
-        <!-- 新增：物理效果开关 -->
         <div class="physics-toggle-container">
-            <span class="physics-toggle-label">（BETA）启用物理效果</span>
+            <span class="physics-toggle-label">启用物理效果</span>
             <label class="physics-toggle">
                 <input type="checkbox" id="physicsToggle">
                 <span class="physics-slider"></span>
@@ -573,7 +549,6 @@
         <p>复制群号973937570或点击蓝色按钮自动跳转</p>
         <p>你也可以点击按钮进入友服qq群（已关服，静待复活）</p>
         
-        <!-- 新增：推荐使用PCL2的提示文字 -->
         <p class="recommend-text">推荐使用PCL2启动器启动客户端</p>
         
         <div class="button-container">
@@ -581,10 +556,8 @@
                 <a href="https://qm.qq.com/q/nkP2rtU2Ag" class="qq-group-link">服务器QQ群</a>
                 <a href="https://qm.qq.com/q/970547713" class="friend-server-link">友服QQ群跳转（已关服，静待复活）</a>
             </div>
-            <!-- 修改：将两个按钮放在同一行 -->
             <div class="button-row">
                 <a href="https://qiamaoserver0721.top/qiamao_mini-game/index.html" class="mystery-game-link">神秘小游戏</a>
-                <!-- 新增：PCL2下载按钮 -->
                 <a href="https://www.mcbbs.net/thread-1141170-1-1.html" class="pcl2-download-link" target="_blank">
                     <span class="pcl2-icon"></span>
                     前往PCL2官方下载地址
@@ -593,66 +566,56 @@
         </div>
     </div>
     
-    <!-- 左下角：邮箱信息（联系方式） -->
     <div class="email-info">服务器反馈邮箱：0d00@qiamaoserver0721.top或1348179575@qq.com</div>
     
-    <!-- 右下角：所有跳转按钮 -->
     <div class="right-bottom-container">
-        <!-- 特别感谢按钮 -->
         <a href="https://space.bilibili.com/1071531206" class="special-thanks-button" target="_blank">
             特别感谢：cute-Fish(点击跳转到他的b站账号)
         </a>
         
-        <!-- 腐竹的B站账号按钮 -->
         <a href="https://space.bilibili.com/651371142" class="bilibili-button" target="_blank">
-            <!-- 修改：使用图床图片作为B站图标 -->
             <span class="bilibili-icon"></span>
             腐竹的B站账号
         </a>
     </div>
 
-    <!-- 图片雨特效脚本 -->
     <script>
-        // 配置参数 - 将图片总数改为36，包含1.jpg到36.jpg
-        const totalImages = 36; // 修改处：从32改为36
+        const totalImages = 36;
         const fallSpeedMin = 3;
         const fallSpeedMax = 8;
         const spinSpeedMin = -2;
         const spinSpeedMax = 2;
         const imageBasePath = './';
 
-        // 密集度设置 - 添加超级牛逼大暴雨选项（比默认密集度高310%）
         const intensitySettings = {
-            light: 1200,    // 小雨：间隔1200ms（默认300ms * 4，减少75%）
-            medium: 300,    // 中雨（默认）：间隔300ms
-            heavy: 231,     // 大雨：间隔231ms（300 / 1.3，增加30%）
-            storm: 150,     // 暴雨：间隔150ms（300 / 2，增加100%）
-            superStorm: 73  // 超级牛逼大暴雨：间隔73ms（300 / 4.1，增加310%）
+            light: 1200,
+            medium: 300,
+            heavy: 231,
+            storm: 150,
+            superStorm: 73
         };
 
-        let currentIntensity = 'medium'; // 默认密度
+        let currentIntensity = 'medium';
         let spawnInterval = intensitySettings[currentIntensity];
         let rainIntervalId = null;
         let imagesLoaded = 0;
         const imagePool = [];
-        let rainEnabled = true; // 控制是否在下雨
-        let physicsEnabled = false; // 物理效果开关状态
-        let physicsAnimationId = null; // 物理动画ID
-        const physicsImages = []; // 存储启用物理效果的图片
+        let rainEnabled = true;
+        let physicsEnabled = false;
+        let physicsAnimationId = null;
+        const physicsImages = [];
 
-        // 优化后的物理参数
         const physicsConfig = {
-            gravity: 0.15,           // 适中的重力
-            friction: 0.96,          // 摩擦力，让运动缓慢停止
-            bounce: 0.4,             // 适中的反弹系数
+            gravity: 0.15,
+            friction: 0.96,
+            bounce: 0.4,
             groundLevel: window.innerHeight - 50,
-            collisionDistance: 55,   // 碰撞检测距离
-            maxSpeed: 3,             // 最大速度限制
-            minSpeed: 0.05,          // 最小速度，低于此值停止
-            collisionForce: 0.15     // 碰撞力
+            collisionDistance: 55,
+            maxSpeed: 3,
+            minSpeed: 0.05,
+            collisionForce: 0.15
         };
 
-        // 预加载所有图片 - 现在预加载1.jpg到36.jpg
         function preloadImages() {
             for (let i = 1; i <= totalImages; i++) {
                 const img = new Image();
@@ -667,7 +630,6 @@
                 img.onerror = () => {
                     console.warn(`图片加载失败: ${img.src}`);
                     imagesLoaded++;
-                    // 即使有图片加载失败，也继续执行
                     if (imagesLoaded === totalImages) {
                         console.log(`图片预加载完成，成功加载: ${imagePool.length} 张，失败: ${totalImages - imagePool.length} 张`);
                         startRaining();
@@ -677,26 +639,21 @@
             }
         }
 
-        // 开始下雨效果
         function startRaining() {
             if (!rainEnabled) return;
             
-            // 清除之前的定时器（如果存在）
             if (rainIntervalId) {
                 clearInterval(rainIntervalId);
             }
             
-            // 设置新的定时器
             rainIntervalId = setInterval(createFallingImage, spawnInterval);
             
-            // 初始创建一些图片
             const initialCount = Math.min(20, Math.floor(300 / spawnInterval) * 5);
             for (let i = 0; i < initialCount; i++) {
                 setTimeout(() => createFallingImage(), i * 50);
             }
         }
 
-        // 停止下雨效果
         function stopRaining() {
             if (rainIntervalId) {
                 clearInterval(rainIntervalId);
@@ -704,7 +661,6 @@
             }
         }
 
-        // 停止物理动画
         function stopPhysicsAnimation() {
             if (physicsAnimationId) {
                 cancelAnimationFrame(physicsAnimationId);
@@ -712,42 +668,34 @@
             }
         }
 
-        // 优化后的开始物理动画函数
         function startPhysicsAnimation() {
             if (!physicsEnabled) return;
             
             function physicsUpdate() {
-                // 更新所有物理图片
                 for (let i = 0; i < physicsImages.length; i++) {
                     const img = physicsImages[i];
                     if (!img.physicsData) continue;
                     
-                    // 应用重力
                     img.physicsData.vy += physicsConfig.gravity;
                     
-                    // 应用摩擦力
                     img.physicsData.vx *= physicsConfig.friction;
                     img.physicsData.vy *= physicsConfig.friction;
                     
-                    // 速度限制 - 防止速度过大
                     const speed = Math.sqrt(img.physicsData.vx * img.physicsData.vx + img.physicsData.vy * img.physicsData.vy);
                     if (speed > physicsConfig.maxSpeed) {
                         img.physicsData.vx = (img.physicsData.vx / speed) * physicsConfig.maxSpeed;
                         img.physicsData.vy = (img.physicsData.vy / speed) * physicsConfig.maxSpeed;
                     }
                     
-                    // 如果速度很小，停止运动
                     if (Math.abs(img.physicsData.vx) < physicsConfig.minSpeed && 
                         Math.abs(img.physicsData.vy) < physicsConfig.minSpeed) {
                         img.physicsData.vx = 0;
                         img.physicsData.vy = 0;
                     }
                     
-                    // 更新位置
                     img.physicsData.x += img.physicsData.vx;
                     img.physicsData.y += img.physicsData.vy;
                     
-                    // 边界碰撞检测（左右边界）- 使用更柔和的方式
                     if (img.physicsData.x < 0) {
                         img.physicsData.x = 0;
                         img.physicsData.vx = Math.abs(img.physicsData.vx) * physicsConfig.bounce * 0.6;
@@ -756,16 +704,13 @@
                         img.physicsData.vx = -Math.abs(img.physicsData.vx) * physicsConfig.bounce * 0.6;
                     }
                     
-                    // 地面碰撞检测 - 更柔和的反弹
                     if (img.physicsData.y >= physicsConfig.groundLevel) {
                         img.physicsData.y = physicsConfig.groundLevel;
                         
-                        // 只有向下运动时才反弹
                         if (img.physicsData.vy > 0) {
                             img.physicsData.vy = -Math.abs(img.physicsData.vy) * physicsConfig.bounce;
                         }
                         
-                        // 如果速度很小，完全停止
                         if (Math.abs(img.physicsData.vy) < 0.1) {
                             img.physicsData.vy = 0;
                         }
@@ -774,7 +719,6 @@
                         }
                     }
                     
-                    // 优化后的图片间碰撞检测
                     for (let j = i + 1; j < physicsImages.length; j++) {
                         const otherImg = physicsImages[j];
                         if (!otherImg.physicsData) continue;
@@ -783,22 +727,16 @@
                         const dy = img.physicsData.y - otherImg.physicsData.y;
                         const distance = Math.sqrt(dx * dx + dy * dy);
                         
-                        // 只在真正接近时才碰撞
                         if (distance < physicsConfig.collisionDistance && distance > 25) {
-                            // 计算碰撞法线
                             const nx = dx / distance;
                             const ny = dy / distance;
                             
-                            // 相对速度
                             const dvx = img.physicsData.vx - otherImg.physicsData.vx;
                             const dvy = img.physicsData.vy - otherImg.physicsData.vy;
                             
-                            // 沿法线方向的速度
                             const velocityAlongNormal = dvx * nx + dvy * ny;
                             
-                            // 只处理接近的碰撞
                             if (velocityAlongNormal < 0) {
-                                // 碰撞响应 - 使用动量守恒简化版
                                 const impulse = (-(1 + physicsConfig.bounce) * velocityAlongNormal) * physicsConfig.collisionForce;
                                 
                                 img.physicsData.vx += impulse * nx;
@@ -806,7 +744,6 @@
                                 otherImg.physicsData.vx -= impulse * nx;
                                 otherImg.physicsData.vy -= impulse * ny;
                                 
-                                // 轻微分离，防止重叠
                                 const overlap = physicsConfig.collisionDistance - distance;
                                 if (overlap > 0) {
                                     const separate = overlap * 0.3;
@@ -819,26 +756,21 @@
                         }
                     }
                     
-                    // 更新图片位置
                     img.element.style.left = `${img.physicsData.x}px`;
                     img.element.style.top = `${img.physicsData.y}px`;
                     
-                    // 更新旋转（更平缓）
                     if (Math.abs(img.physicsData.vx) > 0.05) {
                         img.physicsData.rotation += img.physicsData.vx * 0.3;
                         img.element.style.transform = `rotate(${img.physicsData.rotation}deg)`;
                     }
                 }
                 
-                // 继续下一帧
                 physicsAnimationId = requestAnimationFrame(physicsUpdate);
             }
             
-            // 开始物理动画循环
             physicsAnimationId = requestAnimationFrame(physicsUpdate);
         }
 
-        // 重新启动下落动画（当物理效果关闭时调用）
         function restartFallingAnimation(imgElement, startX, startY, startRotation) {
             if (!imgElement || !imgElement.parentNode) return;
             
@@ -854,9 +786,7 @@
                 imgElement.style.top = `${currentY}px`;
                 imgElement.style.transform = `rotate(${currentRotation}deg)`;
                 
-                // 继续下落直到完全移出屏幕
                 if (currentY > window.innerHeight + 100) {
-                    // 图片完全移出屏幕后移除
                     if (imgElement.parentNode) {
                         document.body.removeChild(imgElement);
                     }
@@ -869,7 +799,6 @@
             requestAnimationFrame(animate);
         }
 
-        // 切换物理效果
         function togglePhysics(enabled) {
             physicsEnabled = enabled;
             const physicsToggle = document.getElementById('physicsToggle');
@@ -878,19 +807,15 @@
             }
             
             if (enabled) {
-                // 启用物理效果
                 console.log('物理效果已启用');
                 
-                // 为所有现有图片添加物理效果
                 document.querySelectorAll('.falling-image').forEach(imgElement => {
-                    // 只处理还在下落的图片
                     const currentTop = parseInt(imgElement.style.top) || -100;
                     if (currentTop < physicsConfig.groundLevel) {
-                        // 为图片添加物理数据 - 使用更小的初始速度
                         const physicsData = {
                             x: parseInt(imgElement.style.left) || 0,
                             y: currentTop,
-                            vx: (Math.random() - 0.5) * 0.5,  // 减小随机速度
+                            vx: (Math.random() - 0.5) * 0.5,
                             vy: 0,
                             rotation: Math.random() * 360
                         };
@@ -903,29 +828,22 @@
                     }
                 });
                 
-                // 开始物理动画
                 startPhysicsAnimation();
             } else {
-                // 禁用物理效果
                 console.log('物理效果已禁用');
                 
-                // 停止物理动画
                 stopPhysicsAnimation();
                 
-                // 为所有物理图片重新启动下落动画
-                const physicsImagesCopy = [...physicsImages]; // 创建副本，因为原数组将被清空
+                const physicsImagesCopy = [...physicsImages];
                 
                 physicsImagesCopy.forEach(imgData => {
                     if (imgData.element && imgData.physicsData) {
-                        // 移除物理类
                         imgData.element.classList.remove('physics-enabled');
                         
-                        // 获取当前位置和旋转
                         const currentX = imgData.physicsData.x;
                         const currentY = imgData.physicsData.y;
                         const currentRotation = imgData.physicsData.rotation;
                         
-                        // 重新启动下落动画
                         restartFallingAnimation(
                             imgData.element, 
                             currentX, 
@@ -935,21 +853,16 @@
                     }
                 });
                 
-                // 清空物理图片数组
                 physicsImages.length = 0;
             }
         }
 
-        // 改变下雨密度
         function changeRainIntensity(intensity) {
-            // 如果密度相同，则不改变
             if (intensity === currentIntensity) return;
             
-            // 更新当前密度和间隔时间
             currentIntensity = intensity;
             spawnInterval = intensitySettings[intensity];
             
-            // 更新选中的按钮样式
             document.querySelectorAll('.rain-intensity-option').forEach(option => {
                 if (option.dataset.intensity === intensity) {
                     option.classList.add('selected');
@@ -958,19 +871,16 @@
                 }
             });
             
-            // 重新开始下雨效果
             stopRaining();
             startRaining();
             
             console.log(`已切换为${getIntensityName(intensity)}模式，图片生成间隔：${spawnInterval}ms`);
             
-            // 如果是超级暴雨，添加性能警告
             if (intensity === 'superStorm') {
                 console.warn('警告：超级暴雨模式对性能要求较高，如果感到卡顿，请切换为较低密度设置。');
             }
         }
 
-        // 获取密度名称
         function getIntensityName(intensity) {
             switch(intensity) {
                 case 'light': return '小雨';
@@ -982,7 +892,6 @@
             }
         }
 
-        // 创建单个下落图片元素并设置动画
         function createFallingImage() {
             if (imagePool.length === 0 || !rainEnabled) return;
 
@@ -994,10 +903,9 @@
             imgElement.src = imgSource.src;
             imgElement.alt = 'Mod Icon';
 
-            // 对于超级暴雨模式，随机化图片大小以增加视觉效果
             let imgWidth = 50;
             if (currentIntensity === 'superStorm') {
-                imgWidth = 30 + Math.random() * 40; // 30px 到 70px 之间
+                imgWidth = 30 + Math.random() * 40;
             }
             imgElement.style.width = `${imgWidth}px`;
 
@@ -1011,7 +919,6 @@
 
             document.body.appendChild(imgElement);
 
-            // 图片数据对象
             const imageData = {
                 element: imgElement,
                 width: imgWidth,
@@ -1031,18 +938,15 @@
                 imageData.currentY = currentY;
                 imageData.currentRotation = currentRotation;
 
-                // 如果图片到达屏幕底部边缘
                 if (currentY > window.innerHeight - 50) {
                     if (physicsEnabled) {
-                        // 物理效果开启：停止下落，添加物理属性
                         imgElement.classList.add('physics-enabled');
                         
-                        // 添加物理数据 - 使用更合理的初始速度
                         const physicsData = {
                             x: parseInt(imgElement.style.left) || startX,
                             y: Math.min(currentY, physicsConfig.groundLevel),
-                            vx: (Math.random() - 0.5) * 0.8,  // 减小初始水平速度
-                            vy: -Math.abs(fallSpeed) * 0.3 * physicsConfig.bounce,  // 减小反弹速度
+                            vx: (Math.random() - 0.5) * 0.8,
+                            vy: -Math.abs(fallSpeed) * 0.3 * physicsConfig.bounce,
                             rotation: currentRotation
                         };
                         
@@ -1051,16 +955,13 @@
                             physicsData: physicsData
                         });
                         
-                        // 如果物理动画没有运行，启动它
                         if (!physicsAnimationId) {
                             startPhysicsAnimation();
                         }
                         
-                        return; // 停止这个图片的下落动画
+                        return;
                     } else {
-                        // 物理效果关闭：继续下落直到完全移出屏幕
                         if (currentY > window.innerHeight + 100) {
-                            // 图片完全移出屏幕后移除
                             document.body.removeChild(imgElement);
                             return;
                         }
@@ -1073,34 +974,25 @@
             requestAnimationFrame(animate);
         }
 
-        // 灵动岛欢迎弹窗控制函数
         function showDynamicIsland() {
             const dynamicIsland = document.getElementById('welcomeDynamicIsland');
             
-            // 页面加载后延迟500ms显示弹窗，让页面先渲染
             setTimeout(() => {
                 dynamicIsland.classList.add('show');
                 
-                // 3秒后反方向收回弹窗
                 setTimeout(() => {
                     dynamicIsland.classList.remove('show');
                     dynamicIsland.classList.add('hide');
                     
-                    // 动画完成后可以完全隐藏元素（可选）
                     setTimeout(() => {
-                        // 如果需要完全移除弹窗，取消下面这行的注释
-                        // dynamicIsland.style.display = 'none';
-                    }, 1000); // 等待动画完成
-                }, 3000); // 3秒后开始收回
-            }, 500); // 延迟500ms显示
+                    }, 1000);
+                }, 3000);
+            }, 500);
         }
 
-        // 设置面板控制
         document.addEventListener('DOMContentLoaded', function() {
-            // 显示灵动岛欢迎弹窗
             showDynamicIsland();
             
-            // 预加载图片
             preloadImages();
             
             const settingsButton = document.getElementById('settingsButton');
@@ -1110,13 +1002,11 @@
             const intensityOptions = document.querySelectorAll('.rain-intensity-option');
             const physicsToggle = document.getElementById('physicsToggle');
             
-            // 打开设置面板
             settingsButton.addEventListener('click', function() {
                 settingsPanel.style.display = 'block';
                 overlay.style.display = 'block';
             });
             
-            // 关闭设置面板
             function closeSettingsPanel() {
                 settingsPanel.style.display = 'none';
                 overlay.style.display = 'none';
@@ -1125,7 +1015,6 @@
             closeButton.addEventListener('click', closeSettingsPanel);
             overlay.addEventListener('click', closeSettingsPanel);
             
-            // 点击选项改变密度
             intensityOptions.forEach(option => {
                 option.addEventListener('click', function() {
                     const intensity = this.dataset.intensity;
@@ -1133,35 +1022,28 @@
                 });
             });
             
-            // 物理效果开关
             if (physicsToggle) {
                 physicsToggle.addEventListener('change', function() {
                     togglePhysics(this.checked);
                 });
             }
             
-            // 点击遮罩层外关闭面板
             settingsPanel.addEventListener('click', function(e) {
                 if (e.target === this) {
                     closeSettingsPanel();
                 }
             });
             
-            // 初始选中中雨选项
             document.querySelector('.rain-intensity-option[data-intensity="medium"]').classList.add('selected');
             
-            // 窗口大小变化时更新地面高度
             window.addEventListener('resize', function() {
                 physicsConfig.groundLevel = window.innerHeight - 50;
             });
         });
 
-        // 处理窗口大小变化
         window.addEventListener('resize', function() {
-            // 更新地面高度
             physicsConfig.groundLevel = window.innerHeight - 50;
         });
     </script>
 </body>
 </html>
-
