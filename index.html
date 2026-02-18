@@ -100,6 +100,12 @@
             pointer-events: none;
             z-index: 9999;
             opacity: 1;
+            transition: transform 0.2s ease-out; /* 添加平滑过渡 */
+        }
+        /* 物理效果启用时的样式 */
+        .falling-image.physics-enabled {
+            pointer-events: auto; /* 物理图片可以参与碰撞检测 */
+            transition: transform 0.1s, top 0.1s, left 0.1s;
         }
         /* 图片雨设置按钮样式 */
         .settings-button {
@@ -137,7 +143,7 @@
             box-shadow: 0 5px 25px rgba(0,0,0,0.2);
             z-index: 10001;
             display: none;
-            width: 380px; /* 稍微加宽以容纳更多选项 */
+            width: 400px; /* 稍微加宽以容纳开关 */
             max-width: 90%;
             border: 2px solid #4CAF50;
         }
@@ -207,6 +213,61 @@
         .rain-intensity-option.disabled:hover {
             background-color: #f8f9fa;
             border-color: #ddd;
+        }
+        /* 新增：物理开关样式 */
+        .physics-toggle-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+        }
+        .physics-toggle-label {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+        .physics-toggle {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+        .physics-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .physics-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 30px;
+        }
+        .physics-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .physics-slider {
+            background-color: #4CAF50;
+        }
+        input:checked + .physics-slider:before {
+            transform: translateX(30px);
         }
         /* 遮罩层样式 */
         .overlay {
@@ -489,8 +550,20 @@
         <button class="rain-intensity-option" data-intensity="storm">暴雨（密集度增加100%）</button>
         <button class="rain-intensity-option super-storm" data-intensity="superStorm">超级牛逼大暴雨（密集度增加310%）</button>
         
+        <!-- 新增：物理效果开关 -->
+        <div class="physics-toggle-container">
+            <span class="physics-toggle-label">启用物理效果</span>
+            <label class="physics-toggle">
+                <input type="checkbox" id="physicsToggle">
+                <span class="physics-slider"></span>
+            </label>
+        </div>
+        
         <p style="font-size: 12px; color: #999; text-align: center; margin-top: 15px;">
             注意：高密度设置可能影响页面性能，请根据设备性能选择
+        </p>
+        <p style="font-size: 12px; color: #999; text-align: center; margin-top: 5px;">
+            物理效果开启后，图标会在底部堆积并互相碰撞
         </p>
     </div>
     
@@ -540,8 +613,8 @@
 
     <!-- 图片雨特效脚本 -->
     <script>
-        // 配置参数 - 将图片总数从32改为36
-        const totalImages = 36; // 修改处：从32改为36，包含1.jpg到36.jpg
+        // 配置参数 - 将图片总数改为36，包含1.jpg到36.jpg
+        const totalImages = 36; // 修改处：从32改为36
         const fallSpeedMin = 3;
         const fallSpeedMax = 8;
         const spinSpeedMin = -2;
@@ -563,6 +636,18 @@
         let imagesLoaded = 0;
         const imagePool = [];
         let rainEnabled = true; // 控制是否在下雨
+        let physicsEnabled = false; // 物理效果开关状态
+        let physicsAnimationId = null; // 物理动画ID
+        const physicsImages = []; // 存储启用物理效果的图片
+
+        // 物理参数
+        const physicsConfig = {
+            gravity: 0.2, // 重力加速度
+            friction: 0.98, // 摩擦力
+            bounce: 0.6, // 反弹系数（弹性，不要太高）
+            groundLevel: window.innerHeight - 50, // 地面高度（图片高度50px）
+            collisionDistance: 40 // 碰撞检测距离
+        };
 
         // 预加载所有图片 - 现在预加载1.jpg到36.jpg
         function preloadImages() {
@@ -579,8 +664,9 @@
                 img.onerror = () => {
                     console.warn(`图片加载失败: ${img.src}`);
                     imagesLoaded++;
-                    // 即使有图片加载失败，也继续执行，避免阻塞
+                    // 即使有图片加载失败，也继续执行
                     if (imagesLoaded === totalImages) {
+                        console.log(`图片预加载完成，成功加载: ${imagePool.length} 张，失败: ${totalImages - imagePool.length} 张`);
                         startRaining();
                     }
                 };
@@ -612,6 +698,156 @@
             if (rainIntervalId) {
                 clearInterval(rainIntervalId);
                 rainIntervalId = null;
+            }
+        }
+
+        // 停止物理动画
+        function stopPhysicsAnimation() {
+            if (physicsAnimationId) {
+                cancelAnimationFrame(physicsAnimationId);
+                physicsAnimationId = null;
+            }
+        }
+
+        // 开始物理动画
+        function startPhysicsAnimation() {
+            if (!physicsEnabled) return;
+            
+            function physicsUpdate() {
+                // 更新所有物理图片
+                for (let i = 0; i < physicsImages.length; i++) {
+                    const img = physicsImages[i];
+                    if (!img.physicsData) continue;
+                    
+                    // 应用重力
+                    img.physicsData.vy += physicsConfig.gravity;
+                    
+                    // 应用摩擦力
+                    img.physicsData.vx *= physicsConfig.friction;
+                    img.physicsData.vy *= physicsConfig.friction;
+                    
+                    // 更新位置
+                    img.physicsData.x += img.physicsData.vx;
+                    img.physicsData.y += img.physicsData.vy;
+                    
+                    // 边界碰撞检测（左右边界）
+                    if (img.physicsData.x <= 0) {
+                        img.physicsData.x = 0;
+                        img.physicsData.vx = Math.abs(img.physicsData.vx) * physicsConfig.bounce;
+                    } else if (img.physicsData.x + 50 >= window.innerWidth) {
+                        img.physicsData.x = window.innerWidth - 50;
+                        img.physicsData.vx = -Math.abs(img.physicsData.vx) * physicsConfig.bounce;
+                    }
+                    
+                    // 地面碰撞检测
+                    if (img.physicsData.y >= physicsConfig.groundLevel) {
+                        img.physicsData.y = physicsConfig.groundLevel;
+                        img.physicsData.vy = -Math.abs(img.physicsData.vy) * physicsConfig.bounce;
+                        
+                        // 如果速度很小，停止运动
+                        if (Math.abs(img.physicsData.vy) < 0.5) {
+                            img.physicsData.vy = 0;
+                        }
+                        if (Math.abs(img.physicsData.vx) < 0.5) {
+                            img.physicsData.vx = 0;
+                        }
+                    }
+                    
+                    // 图片间碰撞检测
+                    for (let j = i + 1; j < physicsImages.length; j++) {
+                        const otherImg = physicsImages[j];
+                        if (!otherImg.physicsData) continue;
+                        
+                        const dx = img.physicsData.x - otherImg.physicsData.x;
+                        const dy = img.physicsData.y - otherImg.physicsData.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < physicsConfig.collisionDistance && distance > 0) {
+                            // 碰撞响应
+                            const angle = Math.atan2(dy, dx);
+                            const targetX = img.physicsData.x + Math.cos(angle) * physicsConfig.collisionDistance;
+                            const targetY = img.physicsData.y + Math.sin(angle) * physicsConfig.collisionDistance;
+                            
+                            // 轻微推开
+                            const force = 0.5;
+                            img.physicsData.vx += (img.physicsData.x - targetX) * force;
+                            img.physicsData.vy += (img.physicsData.y - targetY) * force;
+                            otherImg.physicsData.vx += (targetX - img.physicsData.x) * force;
+                            otherImg.physicsData.vy += (targetY - img.physicsData.y) * force;
+                        }
+                    }
+                    
+                    // 更新图片位置
+                    img.element.style.left = `${img.physicsData.x}px`;
+                    img.element.style.top = `${img.physicsData.y}px`;
+                    
+                    // 更新旋转（根据水平速度）
+                    if (Math.abs(img.physicsData.vx) > 0.1) {
+                        img.physicsData.rotation += img.physicsData.vx * 0.5;
+                        img.element.style.transform = `rotate(${img.physicsData.rotation}deg)`;
+                    }
+                }
+                
+                // 继续下一帧
+                physicsAnimationId = requestAnimationFrame(physicsUpdate);
+            }
+            
+            // 开始物理动画循环
+            physicsAnimationId = requestAnimationFrame(physicsUpdate);
+        }
+
+        // 切换物理效果
+        function togglePhysics(enabled) {
+            physicsEnabled = enabled;
+            const physicsToggle = document.getElementById('physicsToggle');
+            if (physicsToggle) {
+                physicsToggle.checked = enabled;
+            }
+            
+            if (enabled) {
+                // 启用物理效果
+                console.log('物理效果已启用');
+                
+                // 为所有现有图片添加物理效果
+                document.querySelectorAll('.falling-image').forEach(imgElement => {
+                    // 只处理还在下落的图片
+                    const currentTop = parseInt(imgElement.style.top) || -100;
+                    if (currentTop < physicsConfig.groundLevel) {
+                        // 为图片添加物理数据
+                        const physicsData = {
+                            x: parseInt(imgElement.style.left) || 0,
+                            y: currentTop,
+                            vx: (Math.random() - 0.5) * 2, // 随机水平速度
+                            vy: 0,
+                            rotation: Math.random() * 360
+                        };
+                        
+                        imgElement.classList.add('physics-enabled');
+                        physicsImages.push({
+                            element: imgElement,
+                            physicsData: physicsData
+                        });
+                    }
+                });
+                
+                // 开始物理动画
+                startPhysicsAnimation();
+            } else {
+                // 禁用物理效果
+                console.log('物理效果已禁用');
+                
+                // 停止物理动画
+                stopPhysicsAnimation();
+                
+                // 移除物理效果类并清理物理数据
+                physicsImages.forEach(img => {
+                    if (img.element && img.element.classList) {
+                        img.element.classList.remove('physics-enabled');
+                    }
+                });
+                
+                // 清空物理图片数组
+                physicsImages.length = 0;
             }
         }
 
@@ -670,12 +906,11 @@
             imgElement.alt = 'Mod Icon';
 
             // 对于超级暴雨模式，随机化图片大小以增加视觉效果
+            let imgWidth = 50;
             if (currentIntensity === 'superStorm') {
-                const size = 30 + Math.random() * 40; // 30px 到 70px 之间
-                imgElement.style.width = `${size}px`;
-            } else {
-                imgElement.style.width = '50px';
+                imgWidth = 30 + Math.random() * 40; // 30px 到 70px 之间
             }
+            imgElement.style.width = `${imgWidth}px`;
 
             const startX = Math.random() * (window.innerWidth - 100);
             imgElement.style.left = `${startX}px`;
@@ -687,19 +922,64 @@
 
             document.body.appendChild(imgElement);
 
+            // 图片数据对象
+            const imageData = {
+                element: imgElement,
+                width: imgWidth,
+                fallSpeed: fallSpeed,
+                spinSpeed: spinSpeed,
+                currentY: currentY,
+                currentRotation: currentRotation,
+                reachedBottom: false
+            };
+
             function animate() {
-                currentY += fallSpeed;
-                currentRotation += spinSpeed;
+                if (!imageData.reachedBottom) {
+                    currentY += fallSpeed;
+                    currentRotation += spinSpeed;
 
-                imgElement.style.top = `${currentY}px`;
-                imgElement.style.transform = `rotate(${currentRotation}deg)`;
+                    imgElement.style.top = `${currentY}px`;
+                    imgElement.style.transform = `rotate(${currentRotation}deg)`;
+                    
+                    imageData.currentY = currentY;
+                    imageData.currentRotation = currentRotation;
 
-                if (currentY > window.innerHeight) {
-                    document.body.removeChild(imgElement);
-                    return;
+                    // 如果图片到达底部
+                    if (currentY > window.innerHeight - 50) {
+                        if (physicsEnabled) {
+                            // 物理效果开启：停止下落，添加物理属性
+                            imageData.reachedBottom = true;
+                            imgElement.classList.add('physics-enabled');
+                            
+                            // 添加物理数据
+                            const physicsData = {
+                                x: parseInt(imgElement.style.left) || startX,
+                                y: Math.min(currentY, physicsConfig.groundLevel),
+                                vx: (Math.random() - 0.5) * 3, // 随机水平速度
+                                vy: -Math.abs(fallSpeed) * 0.5 * physicsConfig.bounce, // 反弹速度
+                                rotation: currentRotation
+                            };
+                            
+                            physicsImages.push({
+                                element: imgElement,
+                                physicsData: physicsData
+                            });
+                            
+                            // 如果物理动画没有运行，启动它
+                            if (!physicsAnimationId) {
+                                startPhysicsAnimation();
+                            }
+                            
+                            return; // 停止这个图片的下落动画
+                        } else {
+                            // 物理效果关闭：移除图片
+                            document.body.removeChild(imgElement);
+                            return;
+                        }
+                    }
+
+                    requestAnimationFrame(animate);
                 }
-
-                requestAnimationFrame(animate);
             }
 
             requestAnimationFrame(animate);
@@ -740,6 +1020,7 @@
             const overlay = document.getElementById('overlay');
             const closeButton = document.getElementById('closeButton');
             const intensityOptions = document.querySelectorAll('.rain-intensity-option');
+            const physicsToggle = document.getElementById('physicsToggle');
             
             // 打开设置面板
             settingsButton.addEventListener('click', function() {
@@ -764,6 +1045,13 @@
                 });
             });
             
+            // 物理效果开关
+            if (physicsToggle) {
+                physicsToggle.addEventListener('change', function() {
+                    togglePhysics(this.checked);
+                });
+            }
+            
             // 点击遮罩层外关闭面板
             settingsPanel.addEventListener('click', function(e) {
                 if (e.target === this) {
@@ -773,11 +1061,17 @@
             
             // 初始选中中雨选项
             document.querySelector('.rain-intensity-option[data-intensity="medium"]').classList.add('selected');
+            
+            // 窗口大小变化时更新地面高度
+            window.addEventListener('resize', function() {
+                physicsConfig.groundLevel = window.innerHeight - 50;
+            });
         });
 
         // 处理窗口大小变化
         window.addEventListener('resize', function() {
-            // 这里可以添加窗口大小变化时的处理
+            // 更新地面高度
+            physicsConfig.groundLevel = window.innerHeight - 50;
         });
     </script>
 </body>
