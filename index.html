@@ -219,11 +219,37 @@
             z-index: 10000;
             display: none;
         }
-        /* 修改：特别感谢按钮样式 - 现在放到左下角 */
+        /* 修改：左下角邮箱信息样式 */
+        .email-info {
+            position: fixed;
+            left: 20px;
+            bottom: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            max-width: 300px;
+        }
+        /* 新增：右下角跳转按钮容器 */
+        .right-bottom-container {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 15px;
+            max-width: 300px;
+        }
+        /* 修改：特别感谢按钮样式 - 现在在右下角 */
         .special-thanks-button {
             display: block;
             width: 100%;
-            max-width: 280px; /* 适当减小宽度以适应左下角 */
+            max-width: 280px; /* 适当减小宽度以适应右下角 */
             background: linear-gradient(90deg, #FF0000 0%, #FF0000 50%, #007BFF 50%, #007BFF 100%);
             color: white;
             padding: 12px 20px;
@@ -235,7 +261,6 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
             transition: all 0.3s ease;
             border: 2px solid #fff;
-            margin-bottom: 15px; /* 与腐竹账号按钮的间距 */
         }
         .special-thanks-button:hover {
             transform: translateY(-2px);
@@ -246,16 +271,41 @@
             transform: translateY(0);
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
-        /* 新增：左下角容器样式 */
-        .left-bottom-container {
-            position: fixed;
-            left: 20px;
-            bottom: 20px;
-            z-index: 1000;
+        /* 修改：腐竹的B站账号按钮样式 - 现在在右下角 */
+        .bilibili-button {
+            background-color: #FFD700;
+            color: #000;
+            padding: 12px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
             display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            max-width: 300px;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            max-width: 280px;
+            justify-content: center;
+        }
+        .bilibili-button:hover {
+            background-color: #FFC400;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .bilibili-button:active {
+            transform: translateY(0);
+        }
+        /* 修改：使用图床图片作为B站按钮图标 */
+        .bilibili-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            background-image: url('https://tse3-mm.cn.bing.net/th/id/OIP-C.d3YP_TUqRSxOZ-a_M0CZFgHaFj?w=207&h=180&c=7&r=0&o=7&cb=defcachec2&dpr=1.5&pid=1.7&rm=3');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
         }
         .qq-group-link {
             display: inline-block;
@@ -355,68 +405,24 @@
             color: #555;
             font-size: 14px;
         }
-        /* 修改：邮箱信息样式 - 现在在左下角容器内 */
-        .email-info {
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
-            font-size: 14px;
-            margin-bottom: 15px; /* 与特别感谢按钮的间距 */
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-        }
-        /* 修改：腐竹的B站账号按钮样式 - 现在在左下角容器内 */
-        .bilibili-button {
-            background-color: #FFD700;
-            color: #000;
-            padding: 12px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: bold;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .bilibili-button:hover {
-            background-color: #FFC400;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-        .bilibili-button:active {
-            transform: translateY(0);
-        }
-        /* 修改：使用图床图片作为B站按钮图标 */
-        .bilibili-icon {
-            width: 20px;
-            height: 20px;
-            margin-right: 8px;
-            background-image: url('https://tse3-mm.cn.bing.net/th/id/OIP-C.d3YP_TUqRSxOZ-a_M0CZFgHaFj?w=207&h=180&c=7&r=0&o=7&cb=defcachec2&dpr=1.5&pid=1.7&rm=3');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-        }
         @media (max-width: 768px) {
-            .left-bottom-container {
+            .email-info {
                 left: 10px;
                 bottom: 10px;
-                max-width: calc(100% - 20px);
-            }
-            .email-info {
                 font-size: 12px;
                 padding: 8px 12px;
-                margin-bottom: 10px;
+                max-width: calc(100% - 20px);
             }
-            .bilibili-button {
-                font-size: 14px;
-                padding: 10px 15px;
+            .right-bottom-container {
+                right: 10px;
+                bottom: 10px;
+                max-width: calc(100% - 20px);
+                align-items: center;
             }
-            .special-thanks-button {
-                font-size: 14px;
-                padding: 10px 15px;
+            .bilibili-button, .special-thanks-button {
                 max-width: 100%;
+                font-size: 14px;
+                padding: 10px 15px;
             }
             .settings-button {
                 top: 10px;
@@ -449,10 +455,11 @@
             }
         }
         @media (max-width: 480px) {
-            .left-bottom-container {
-                align-items: center; /* 在移动端居中显示 */
+            .right-bottom-container {
+                align-items: center;
+                width: calc(100% - 20px);
             }
-            .special-thanks-button {
+            .bilibili-button, .special-thanks-button {
                 text-align: center;
             }
         }
@@ -513,12 +520,12 @@
         </div>
     </div>
     
-    <!-- 新增：左下角容器，包含邮箱信息、特别感谢按钮和腐竹B站账号按钮 -->
-    <div class="left-bottom-container">
-        <!-- 邮箱信息 -->
-        <div class="email-info">服务器反馈邮箱：0d00@qiamaoserver0721.top或1348179575@qq.com</div>
-        
-        <!-- 特别感谢按钮 - 从顶部移动到这里，放在腐竹账号按钮上面 -->
+    <!-- 左下角：邮箱信息（联系方式） -->
+    <div class="email-info">服务器反馈邮箱：0d00@qiamaoserver0721.top或1348179575@qq.com</div>
+    
+    <!-- 右下角：所有跳转按钮 -->
+    <div class="right-bottom-container">
+        <!-- 特别感谢按钮 -->
         <a href="https://space.bilibili.com/1071531206" class="special-thanks-button" target="_blank">
             特别感谢：cute-Fish(点击跳转到他的b站账号)
         </a>
