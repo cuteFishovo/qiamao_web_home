@@ -552,7 +552,7 @@
         
         <!-- 新增：物理效果开关 -->
         <div class="physics-toggle-container">
-            <span class="physics-toggle-label">(beta)启用物理效果(毛病一堆还卡的要死，不建议开)</span>
+            <span class="physics-toggle-label">启用物理效果（BETA，bug多还卡）</span>
             <label class="physics-toggle">
                 <input type="checkbox" id="physicsToggle">
                 <span class="physics-slider"></span>
@@ -563,7 +563,7 @@
             注意：高密度设置可能影响页面性能，请根据设备性能选择
         </p>
         <p style="font-size: 12px; color: #999; text-align: center; margin-top: 5px;">
-            物理效果开启后，图标会在底部堆积并互相碰撞
+            物理效果开启时，图标在底部堆积并碰撞；关闭时，图标会下落出屏幕
         </p>
     </div>
     
@@ -929,57 +929,56 @@
                 fallSpeed: fallSpeed,
                 spinSpeed: spinSpeed,
                 currentY: currentY,
-                currentRotation: currentRotation,
-                reachedBottom: false
+                currentRotation: currentRotation
             };
 
             function animate() {
-                if (!imageData.reachedBottom) {
-                    currentY += fallSpeed;
-                    currentRotation += spinSpeed;
+                currentY += fallSpeed;
+                currentRotation += spinSpeed;
 
-                    imgElement.style.top = `${currentY}px`;
-                    imgElement.style.transform = `rotate(${currentRotation}deg)`;
-                    
-                    imageData.currentY = currentY;
-                    imageData.currentRotation = currentRotation;
+                imgElement.style.top = `${currentY}px`;
+                imgElement.style.transform = `rotate(${currentRotation}deg)`;
+                
+                imageData.currentY = currentY;
+                imageData.currentRotation = currentRotation;
 
-                    // 如果图片到达底部
-                    if (currentY > window.innerHeight - 50) {
-                        if (physicsEnabled) {
-                            // 物理效果开启：停止下落，添加物理属性
-                            imageData.reachedBottom = true;
-                            imgElement.classList.add('physics-enabled');
-                            
-                            // 添加物理数据
-                            const physicsData = {
-                                x: parseInt(imgElement.style.left) || startX,
-                                y: Math.min(currentY, physicsConfig.groundLevel),
-                                vx: (Math.random() - 0.5) * 3, // 随机水平速度
-                                vy: -Math.abs(fallSpeed) * 0.5 * physicsConfig.bounce, // 反弹速度
-                                rotation: currentRotation
-                            };
-                            
-                            physicsImages.push({
-                                element: imgElement,
-                                physicsData: physicsData
-                            });
-                            
-                            // 如果物理动画没有运行，启动它
-                            if (!physicsAnimationId) {
-                                startPhysicsAnimation();
-                            }
-                            
-                            return; // 停止这个图片的下落动画
-                        } else {
-                            // 物理效果关闭：移除图片
+                // 如果图片到达屏幕底部边缘
+                if (currentY > window.innerHeight - 50) {
+                    if (physicsEnabled) {
+                        // 物理效果开启：停止下落，添加物理属性
+                        imgElement.classList.add('physics-enabled');
+                        
+                        // 添加物理数据
+                        const physicsData = {
+                            x: parseInt(imgElement.style.left) || startX,
+                            y: Math.min(currentY, physicsConfig.groundLevel),
+                            vx: (Math.random() - 0.5) * 3, // 随机水平速度
+                            vy: -Math.abs(fallSpeed) * 0.5 * physicsConfig.bounce, // 反弹速度
+                            rotation: currentRotation
+                        };
+                        
+                        physicsImages.push({
+                            element: imgElement,
+                            physicsData: physicsData
+                        });
+                        
+                        // 如果物理动画没有运行，启动它
+                        if (!physicsAnimationId) {
+                            startPhysicsAnimation();
+                        }
+                        
+                        return; // 停止这个图片的下落动画
+                    } else {
+                        // 物理效果关闭：继续下落直到完全移出屏幕
+                        if (currentY > window.innerHeight + 100) {
+                            // 图片完全移出屏幕后移除
                             document.body.removeChild(imgElement);
                             return;
                         }
                     }
-
-                    requestAnimationFrame(animate);
                 }
+
+                requestAnimationFrame(animate);
             }
 
             requestAnimationFrame(animate);
@@ -1076,4 +1075,3 @@
     </script>
 </body>
 </html>
-
