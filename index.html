@@ -44,8 +44,110 @@
             width: 50px;
             height: auto;
             pointer-events: none;
-            z-index: 9999; /* 最高图层 */
-            opacity: 1; /* 修改处：不透明度拉满（1 = 100%不透明） */
+            z-index: 9999;
+            opacity: 1;
+        }
+        /* 图片雨设置按钮样式 */
+        .settings-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            z-index: 10000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        .settings-button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .settings-button:active {
+            transform: translateY(0);
+        }
+        /* 设置面板样式 */
+        .settings-panel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+            z-index: 10001;
+            display: none;
+            width: 350px;
+            max-width: 90%;
+            border: 2px solid #4CAF50;
+        }
+        .settings-panel h3 {
+            margin-top: 0;
+            color: #333;
+            text-align: center;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            color: #888;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .close-button:hover {
+            color: #f44336;
+        }
+        .rain-intensity-option {
+            display: block;
+            width: 100%;
+            padding: 12px 15px;
+            margin: 10px 0;
+            background-color: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .rain-intensity-option:hover {
+            background-color: #e9ecef;
+            border-color: #4CAF50;
+        }
+        .rain-intensity-option.selected {
+            background-color: #4CAF50;
+            color: white;
+            border-color: #45a049;
+        }
+        .rain-intensity-option.disabled {
+            background-color: #f8f9fa;
+            color: #999;
+            border-color: #ddd;
+            cursor: not-allowed;
+        }
+        .rain-intensity-option.disabled:hover {
+            background-color: #f8f9fa;
+            border-color: #ddd;
+        }
+        /* 遮罩层样式 */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            display: none;
         }
         /* 特别感谢按钮样式 */
         .special-thanks-button {
@@ -107,27 +209,28 @@
             background-color: #e0a800;
         }
         .mystery-game-link {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
             background-color: #28a745;
             color: white;
-            padding: 12px 24px;
+            padding: 12px 20px 12px 15px;
             text-decoration: none;
             border-radius: 5px;
             font-size: 16px;
             margin-top: 15px;
             transition: background-color 0.3s;
-            margin-right: 10px; /* 为旁边的新按钮留出间距 */
+            margin-right: 10px;
         }
         .mystery-game-link:hover {
             background-color: #218838;
         }
         /* 新增PCL2按钮样式 */
         .pcl2-download-link {
-            display: inline-flex; /* 使用flex以便图标和文字对齐 */
+            display: inline-flex;
             align-items: center;
-            background-color: #6f42c1; /* 紫色，区别于其他按钮 */
+            background-color: #6f42c1;
             color: white;
-            padding: 12px 20px 12px 15px; /* 左内边距稍小，为图标留位置 */
+            padding: 12px 20px 12px 15px;
             text-decoration: none;
             border-radius: 5px;
             font-size: 16px;
@@ -164,7 +267,7 @@
             justify-content: center;
             gap: 20px;
             margin-bottom: 15px;
-            flex-wrap: wrap; /* 允许按钮在窄屏下换行 */
+            flex-wrap: wrap;
         }
         .recommend-text {
             text-align: center;
@@ -252,6 +355,16 @@
                 font-size: 14px;
                 padding: 10px 15px;
             }
+            .settings-button {
+                top: 10px;
+                right: 10px;
+                font-size: 14px;
+                padding: 10px 15px;
+            }
+            .settings-panel {
+                width: 300px;
+                padding: 20px;
+            }
             .special-thanks-button {
                 font-size: 16px;
                 padding: 12px 20px;
@@ -265,8 +378,8 @@
                 margin: 0;
             }
             .mystery-game-link, .pcl2-download-link {
-                margin: 5px 0; /* 在移动端改为上下排列时的间距 */
-                width: 90%; /* 让按钮在移动端变宽 */
+                margin: 5px 0;
+                width: 90%;
                 justify-content: center;
             }
             .falling-image {
@@ -276,6 +389,24 @@
     </style>
 </head>
 <body>
+    <!-- 图片雨设置按钮 -->
+    <button class="settings-button" id="settingsButton">图标下雨效果设置</button>
+    
+    <!-- 设置面板遮罩层 -->
+    <div class="overlay" id="overlay"></div>
+    
+    <!-- 设置面板 -->
+    <div class="settings-panel" id="settingsPanel">
+        <span class="close-button" id="closeButton">✕</span>
+        <h3>图标下雨效果设置</h3>
+        <p style="text-align: center; color: #666; margin-bottom: 20px;">选择图标下落密度</p>
+        
+        <button class="rain-intensity-option" data-intensity="light">小雨（密集度减少75%）</button>
+        <button class="rain-intensity-option selected" data-intensity="medium">中雨（默认）</button>
+        <button class="rain-intensity-option" data-intensity="heavy">大雨（密集度增加30%）</button>
+        <button class="rain-intensity-option" data-intensity="storm">暴雨（密集度增加100%）</button>
+    </div>
+    
     <!-- 特别感谢按钮 -->
     <a href="https://space.bilibili.com/1071531206" class="special-thanks-button" target="_blank">特别感谢：cute-Fish(点击跳转到他的b站账号)</a>
     
@@ -297,13 +428,12 @@
             <div class="button-row">
                 <a href="https://qiamaoserver0721.top/qiamao_mini-game/index.html" class="mystery-game-link">神秘小游戏</a>
                 <!-- 新增：PCL2下载按钮 -->
-                <a href="https://ltcat.lanzouv.com/b0aj6gsid" class="pcl2-download-link" target="_blank">
+                <a href="https://www.mcbbs.net/thread-1141170-1-1.html" class="pcl2-download-link" target="_blank">
                     <span class="pcl2-icon"></span>
                     前往PCL2官方下载地址
                 </a>
             </div>
         </div>
-        <!-- 原“还有神秘小游戏可以玩(”的文本已被移除 -->
     </div>
     
     <!-- 左下角邮箱信息 -->
@@ -317,17 +447,30 @@
 
     <!-- 图片雨特效脚本 -->
     <script>
+        // 配置参数
         const totalImages = 32;
         const fallSpeedMin = 3;
         const fallSpeedMax = 8;
         const spinSpeedMin = -2;
         const spinSpeedMax = 2;
-        const spawnInterval = 300;
         const imageBasePath = './';
 
+        // 密集度设置
+        const intensitySettings = {
+            light: 1200,    // 小雨：间隔1200ms（默认300ms * 4）
+            medium: 300,    // 中雨（默认）：间隔300ms
+            heavy: 231,     // 大雨：间隔231ms（300 / 1.3）
+            storm: 150      // 暴雨：间隔150ms（300 / 2）
+        };
+
+        let currentIntensity = 'medium'; // 默认密度
+        let spawnInterval = intensitySettings[currentIntensity];
+        let rainIntervalId = null;
         let imagesLoaded = 0;
         const imagePool = [];
+        let rainEnabled = true; // 控制是否在下雨
 
+        // 预加载所有图片
         function preloadImages() {
             for (let i = 1; i <= totalImages; i++) {
                 const img = new Image();
@@ -350,15 +493,71 @@
             }
         }
 
+        // 开始下雨效果
         function startRaining() {
-            setInterval(createFallingImage, spawnInterval);
+            if (!rainEnabled) return;
+            
+            // 清除之前的定时器（如果存在）
+            if (rainIntervalId) {
+                clearInterval(rainIntervalId);
+            }
+            
+            // 设置新的定时器
+            rainIntervalId = setInterval(createFallingImage, spawnInterval);
+            
+            // 初始创建一些图片
             for (let i = 0; i < 10; i++) {
                 setTimeout(() => createFallingImage(), i * 100);
             }
         }
 
+        // 停止下雨效果
+        function stopRaining() {
+            if (rainIntervalId) {
+                clearInterval(rainIntervalId);
+                rainIntervalId = null;
+            }
+        }
+
+        // 改变下雨密度
+        function changeRainIntensity(intensity) {
+            // 如果密度相同，则不改变
+            if (intensity === currentIntensity) return;
+            
+            // 更新当前密度和间隔时间
+            currentIntensity = intensity;
+            spawnInterval = intensitySettings[intensity];
+            
+            // 更新选中的按钮样式
+            document.querySelectorAll('.rain-intensity-option').forEach(option => {
+                if (option.dataset.intensity === intensity) {
+                    option.classList.add('selected');
+                } else {
+                    option.classList.remove('selected');
+                }
+            });
+            
+            // 重新开始下雨效果
+            stopRaining();
+            startRaining();
+            
+            console.log(`已切换为${getIntensityName(intensity)}模式，图片生成间隔：${spawnInterval}ms`);
+        }
+
+        // 获取密度名称
+        function getIntensityName(intensity) {
+            switch(intensity) {
+                case 'light': return '小雨';
+                case 'medium': return '中雨';
+                case 'heavy': return '大雨';
+                case 'storm': return '暴雨';
+                default: return '中雨';
+            }
+        }
+
+        // 创建单个下落图片元素并设置动画
         function createFallingImage() {
-            if (imagePool.length === 0) return;
+            if (imagePool.length === 0 || !rainEnabled) return;
 
             const randomIndex = Math.floor(Math.random() * imagePool.length);
             const imgSource = imagePool[randomIndex];
@@ -396,8 +595,55 @@
             requestAnimationFrame(animate);
         }
 
-        window.addEventListener('DOMContentLoaded', preloadImages);
+        // 设置面板控制
+        document.addEventListener('DOMContentLoaded', function() {
+            // 预加载图片
+            preloadImages();
+            
+            const settingsButton = document.getElementById('settingsButton');
+            const settingsPanel = document.getElementById('settingsPanel');
+            const overlay = document.getElementById('overlay');
+            const closeButton = document.getElementById('closeButton');
+            const intensityOptions = document.querySelectorAll('.rain-intensity-option');
+            
+            // 打开设置面板
+            settingsButton.addEventListener('click', function() {
+                settingsPanel.style.display = 'block';
+                overlay.style.display = 'block';
+            });
+            
+            // 关闭设置面板
+            function closeSettingsPanel() {
+                settingsPanel.style.display = 'none';
+                overlay.style.display = 'none';
+            }
+            
+            closeButton.addEventListener('click', closeSettingsPanel);
+            overlay.addEventListener('click', closeSettingsPanel);
+            
+            // 点击选项改变密度
+            intensityOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const intensity = this.dataset.intensity;
+                    changeRainIntensity(intensity);
+                });
+            });
+            
+            // 点击遮罩层外关闭面板
+            settingsPanel.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeSettingsPanel();
+                }
+            });
+            
+            // 初始选中中雨选项
+            document.querySelector('.rain-intensity-option[data-intensity="medium"]').classList.add('selected');
+        });
+
+        // 处理窗口大小变化
+        window.addEventListener('resize', function() {
+            // 这里可以添加窗口大小变化时的处理
+        });
     </script>
 </body>
 </html>
-
