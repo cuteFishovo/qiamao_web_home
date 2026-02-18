@@ -43,7 +43,7 @@
             z-index: 500;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 1.5s ease-in-out;
+            transition: opacity 1s ease-in-out; /* 调整为1秒过渡 */
             max-width: 150px;
             max-height: 150px;
             border-radius: 8px;
@@ -352,12 +352,41 @@
 
             // 2. 创建图片元素并管理
             const maxImages = 8; // 同时显示的最大图片数量
-            const visibleTime = 2500; // 可见时间2.5秒
+            const visibleTime = 1000; // 改为1秒可见时间
+            
+            // 用于跟踪已显示的图片索引，避免重复
+            let usedIndexes = [];
+            
+            // 获取一个未使用过的随机图片索引
+            function getUniqueRandomIndex() {
+                if (usedIndexes.length >= imageUrls.length) {
+                    // 如果所有图片都已使用过，重置列表
+                    usedIndexes = [];
+                }
+                
+                let randomIndex;
+                let attempts = 0;
+                const maxAttempts = 20; // 防止无限循环
+                
+                do {
+                    randomIndex = Math.floor(Math.random() * imageUrls.length);
+                    attempts++;
+                } while (usedIndexes.includes(randomIndex) && attempts < maxAttempts);
+                
+                // 如果尝试次数过多，随机选择一个
+                if (attempts >= maxAttempts) {
+                    randomIndex = Math.floor(Math.random() * imageUrls.length);
+                }
+                
+                usedIndexes.push(randomIndex);
+                return randomIndex;
+            }
             
             // 创建显示图片的函数（核心修改）
             function createFloatingImage() {
-                // 随机选择一个图片URL
-                const randomUrl = imageUrls[Math.floor(Math.random() * imageUrls.length)];
+                // 获取一个不重复的随机图片索引
+                const randomIndex = getUniqueRandomIndex();
+                const randomUrl = imageUrls[randomIndex];
                 
                 // 创建图片元素
                 const img = document.createElement('img');
@@ -365,33 +394,30 @@
                 img.alt = 'Minecraft图片';
                 
                 // **强制设置显示尺寸，忽略原图大小**
-                // 统一显示为 80px 宽度，高度自适应
-                const displayWidth = 80; // 您可以根据视觉效果调整此数值
+                // 统一显示为 120px 宽度，高度自适应（稍微增大尺寸）
+                const displayWidth = 120; // 增大尺寸以更好显示
                 img.style.width = `${displayWidth}px`;
                 img.style.height = 'auto'; 
                 img.style.maxWidth = `${displayWidth}px`; // 双重保障
                 
                 // 随机设置位置（避开边缘）
-                const margin = 80; // 边距也相应缩小
+                const margin = 100; // 边距相应增大
                 const x = margin + Math.random() * (window.innerWidth - 2 * margin);
                 const y = margin + Math.random() * (window.innerHeight - 2 * margin);
                 
                 img.style.left = `${x}px`;
                 img.style.top = `${y}px`;
                 
-                // **已移除旋转角度设置，图片不再倾斜**
-                // 原代码中的旋转设置已被删除
-                
                 // 添加到页面
                 document.body.appendChild(img);
                 
-                // **添加图片加载监听，失败则移除**
+                // **添加图片加载监听，失败则移除并重新尝试**
                 img.onload = function() {
                     // 图片加载成功，开始渐入动画
                     setTimeout(() => {
                         img.style.opacity = '0.8'; // 渐入
                         
-                        // 2.5秒后开始淡出
+                        // 1秒后开始淡出
                         setTimeout(() => {
                             img.style.opacity = '0'; // 渐出
                             
@@ -400,31 +426,40 @@
                                 if (img.parentNode) {
                                     img.parentNode.removeChild(img);
                                 }
-                            }, 1500); // 等待淡出动画完成
+                            }, 1000); // 等待淡出动画完成（与可见时间一致）
                         }, visibleTime);
                     }, 100);
                 };
                 
                 img.onerror = function() {
-                    // **图片加载失败（可能是防盗链或链接失效），静默移除该元素**
+                    // **图片加载失败，从已使用列表中移除该索引，以便可以再次尝试其他图片**
+                    const indexToRemove = usedIndexes.indexOf(randomIndex);
+                    if (indexToRemove > -1) {
+                        usedIndexes.splice(indexToRemove, 1);
+                    }
+                    
+                    // 静默移除该元素
                     console.log(`图片加载失败，已跳过: ${randomUrl}`); // 控制台可查看日志
                     if (img.parentNode) {
                         img.parentNode.removeChild(img);
                     }
+                    
+                    // 如果图片加载失败，立即尝试显示另一张图片
+                    setTimeout(createFloatingImage, 500);
                 };
                 
                 // **最后设置src，触发加载（或错误）事件**
                 img.src = randomUrl;
                 
                 // 设置下一次显示（无论本次成功与否）
-                const nextShowDelay = 3000 + Math.random() * 7000; // 随机3-10秒后再次显示
+                const nextShowDelay = 2000 + Math.random() * 4000; // 随机2-6秒后再次显示
                 setTimeout(createFloatingImage, nextShowDelay);
             }
             
             // 初始创建多个图片
             for (let i = 0; i < maxImages; i++) {
                 // 随机延迟开始，避免所有图片同时出现
-                const delay = Math.random() * 5000;
+                const delay = Math.random() * 3000;
                 setTimeout(createFloatingImage, delay);
             }
             
@@ -434,9 +469,12 @@
                     img.parentNode.removeChild(img);
                 });
                 
+                // 重置已使用索引
+                usedIndexes = [];
+                
                 // 重新创建图片
                 for (let i = 0; i < maxImages; i++) {
-                    const delay = Math.random() * 5000;
+                    const delay = Math.random() * 3000;
                     setTimeout(createFloatingImage, delay);
                 }
             });
