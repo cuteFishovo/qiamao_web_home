@@ -28,7 +28,32 @@
             min-height: 100vh;
             overflow-x: hidden;
         }
-        /* ... 其余CSS代码保持不变 ... */
+        /* 新增：欢迎弹窗样式 */
+        .welcome-popup {
+            position: fixed;
+            top: -100px; /* 初始位置在屏幕外 */
+            left: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.2); /* 毛玻璃背景 */
+            backdrop-filter: blur(15px); /* 毛玻璃效果 */
+            -webkit-backdrop-filter: blur(15px); /* Safari 支持 */
+            padding: 20px 0;
+            text-align: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            z-index: 10002; /* 确保在最上层 */
+            transition: all 1s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* 惯性+弹性动画 */
+        }
+        .welcome-popup.show {
+            top: 0; /* 显示时位置 */
+        }
+        .welcome-popup.hide {
+            top: -150px; /* 隐藏时位置，比初始位置更高以实现反方向收回 */
+        }
         .container {
             max-width: 800px;
             margin: 0 auto;
@@ -306,6 +331,7 @@
             z-index: 1000;
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
+        /* 修改：腐竹的B站账号按钮图标样式 - 使用图床图片 */
         .bilibili-button {
             position: fixed;
             right: 20px;
@@ -332,33 +358,15 @@
         .bilibili-button:active {
             transform: translateY(0);
         }
+        /* 修改：使用图床图片作为B站按钮图标 */
         .bilibili-icon {
             width: 20px;
             height: 20px;
-            background-color: #FB7299;
-            border-radius: 50%;
-            position: relative;
-            display: inline-block;
-        }
-        .bilibili-icon:before,
-        .bilibili-icon:after {
-            content: "";
-            position: absolute;
-            background-color: white;
-        }
-        .bilibili-icon:before {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            top: 3px;
-            left: 3px;
-        }
-        .bilibili-icon:after {
-            width: 6px;
-            height: 4px;
-            border-radius: 2px;
-            top: 9px;
-            left: 7px;
+            margin-right: 8px;
+            background-image: url('https://tse3-mm.cn.bing.net/th/id/OIP-C.d3YP_TUqRSxOZ-a_M0CZFgHaFj?w=207&h=180&c=7&r=0&o=7&cb=defcachec2&dpr=1.5&pid=1.7&rm=3');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
         }
         @media (max-width: 768px) {
             .email-info {
@@ -407,10 +415,20 @@
                 font-size: 14px;
                 padding: 10px 12px;
             }
+            /* 移动端欢迎弹窗字体大小调整 */
+            .welcome-popup {
+                font-size: 20px;
+                padding: 15px 0;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- 新增：欢迎弹窗 -->
+    <div class="welcome-popup" id="welcomePopup">
+        欢迎来到qiamao服务器网站！！！
+    </div>
+    
     <!-- 图片雨设置按钮 -->
     <button class="settings-button" id="settingsButton">图标下雨效果设置</button>
     
@@ -468,6 +486,7 @@
     
     <!-- 右下角B站账号按钮 -->
     <a href="https://space.bilibili.com/651371142" class="bilibili-button" target="_blank">
+        <!-- 修改：使用图床图片作为B站图标 -->
         <span class="bilibili-icon"></span>
         腐竹的B站账号
     </a>
@@ -638,8 +657,33 @@
             requestAnimationFrame(animate);
         }
 
+        // 欢迎弹窗控制函数
+        function showWelcomePopup() {
+            const welcomePopup = document.getElementById('welcomePopup');
+            
+            // 页面加载后延迟500ms显示弹窗，让页面先渲染
+            setTimeout(() => {
+                welcomePopup.classList.add('show');
+                
+                // 3秒后反方向收回弹窗
+                setTimeout(() => {
+                    welcomePopup.classList.remove('show');
+                    welcomePopup.classList.add('hide');
+                    
+                    // 动画完成后移除元素（可选）
+                    setTimeout(() => {
+                        // 如果需要完全移除弹窗，取消下面这行的注释
+                        // welcomePopup.style.display = 'none';
+                    }, 1000); // 等待动画完成
+                }, 3000); // 3秒后开始收回
+            }, 500); // 延迟500ms显示
+        }
+
         // 设置面板控制
         document.addEventListener('DOMContentLoaded', function() {
+            // 显示欢迎弹窗
+            showWelcomePopup();
+            
             // 预加载图片
             preloadImages();
             
@@ -690,4 +734,3 @@
     </script>
 </body>
 </html>
-
