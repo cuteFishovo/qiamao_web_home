@@ -299,11 +299,6 @@
             font-weight: bold;
             color: #333;
         }
-        .physics-toggle-label span.beta {
-            color: #ff9900;
-            font-weight: bold;
-            margin-right: 5px;
-        }
         .physics-toggle {
             position: relative;
             display: inline-block;
@@ -572,6 +567,10 @@
     </style>
 </head>
 <body>
+    <audio id="backgroundMusic" loop style="display: none;">
+        <source src="1306399835.mp3" type="audio/mpeg">
+    </audio>
+    
     <div class="welcome-dynamic-island" id="welcomeDynamicIsland">
         欢迎来到qiamao服务器网站！！！
     </div>
@@ -1059,6 +1058,38 @@
             
             preloadImages();
             
+            setTimeout(function() {
+                const backgroundMusic = document.getElementById('backgroundMusic');
+                
+                if (backgroundMusic) {
+                    const playPromise = backgroundMusic.play();
+                    
+                    if (playPromise !== undefined) {
+                        playPromise.then(() => {
+                            console.log('背景音乐已开始播放');
+                        }).catch(error => {
+                            console.log('自动播放被阻止，等待用户交互');
+                            let musicStarted = false;
+                            
+                            function startMusicOnInteraction() {
+                                if (!musicStarted) {
+                                    backgroundMusic.play().then(() => {
+                                        console.log('用户交互后音乐已开始播放');
+                                        musicStarted = true;
+                                    }).catch(e => {
+                                        console.log('用户交互后播放仍然失败:', e);
+                                    });
+                                }
+                            }
+                            
+                            document.addEventListener('click', startMusicOnInteraction);
+                            document.addEventListener('keydown', startMusicOnInteraction);
+                            document.addEventListener('touchstart', startMusicOnInteraction);
+                        });
+                    }
+                }
+            }, 6000);
+
             const settingsButton = document.getElementById('settingsButton');
             const settingsPanel = document.getElementById('settingsPanel');
             const overlay = document.getElementById('overlay');
