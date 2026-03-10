@@ -503,6 +503,14 @@
             margin-bottom: 15px;
             flex-wrap: wrap;
         }
+        .button-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+            max-width: 300px;
+        }
         .recommend-text {
             text-align: center;
             margin-top: 15px;
@@ -553,6 +561,10 @@
             .rain-intensity-option {
                 font-size: 14px;
                 padding: 10px 12px;
+            }
+            .button-column {
+                width: 100%;
+                max-width: 100%;
             }
         }
         @media (max-width: 480px) {
@@ -612,16 +624,14 @@
         <p class="recommend-text">推荐使用PCL2启动器启动客户端</p>
         
         <div class="button-container">
-            <div class="button-row">
+            <div class="button-column">
                 <a href="https://qm.qq.com/q/nkP2rtU2Ag" class="qq-group-link">服务器QQ群</a>
-                <a href="https://qm.qq.com/q/970547713" class="friend-server-link">友服QQ群跳转（已关服，静待复活）</a>
-            </div>
-            <div class="button-row">
-                <a href="https://qiamaoserver0721.top/qiamao_mini-game/index.html" class="mystery-game-link">神秘小游戏</a>
                 <a href="https://ltcat.lanzouv.com/b0aj6gsid" class="pcl2-download-link" target="_blank">
                     <span class="pcl2-icon"></span>
                     前往PCL2官方下载地址
                 </a>
+                <a href="https://qm.qq.com/q/970547713" class="friend-server-link">友服QQ群跳转（已关服，静待复活）</a>
+                <a href="https://qiamaoserver0721.top/qiamao_mini-game/index.html" class="mystery-game-link">神秘小游戏</a>
             </div>
         </div>
     </div>
@@ -1098,4 +1108,3 @@
     </script>
 </body>
 </html>
-
