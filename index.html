@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>欢迎来到qiamao服务器网站❤️❤️❤️</title>
+    <title>欢迎来到qiamao服务器网站！！！</title>
     
     <link rel="icon" type="image/x-icon" href="icon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="icon.ico">
@@ -76,7 +76,7 @@
         
         .container {
             max-width: 800px;
-            margin: 80px auto 0 auto; /* 修改此处，添加上边距 */
+            margin: 80px auto 0 auto;
             background: rgba(255, 255, 255, 0.85);
             padding: 30px;
             border-radius: 8px;
@@ -569,7 +569,7 @@
 <body>
     
     <div class="welcome-dynamic-island" id="welcomeDynamicIsland">
-        欢迎来到qiamao服务器网站❤️❤️❤️
+        欢迎来到qiamao服务器网站！！！
     </div>
     
     <button class="settings-button" id="settingsButton">图标下雨效果设置</button>
@@ -639,7 +639,7 @@
         </a>
     </div>
 
-<script>
+    <script>
         const totalImages = 36;
         const fallSpeedMin = 3;
         const fallSpeedMax = 8;
@@ -683,15 +683,12 @@
                 img.onload = () => {
                     imagesLoaded++;
                     if (imagesLoaded === totalImages) {
-                        console.log(`所有 ${totalImages} 张图片预加载完成，开始图片雨。`);
                         startRaining();
                     }
                 };
                 img.onerror = () => {
-                    console.warn(`图片加载失败: ${img.src}`);
                     imagesLoaded++;
                     if (imagesLoaded === totalImages) {
-                        console.log(`图片预加载完成，成功加载: ${imagePool.length} 张，失败: ${totalImages - imagePool.length} 张`);
                         startRaining();
                     }
                 };
@@ -867,8 +864,6 @@
             }
             
             if (enabled) {
-                console.log('物理效果已启用');
-                
                 document.querySelectorAll('.falling-image').forEach(imgElement => {
                     const currentTop = parseInt(imgElement.style.top) || -100;
                     if (currentTop < physicsConfig.groundLevel) {
@@ -890,8 +885,6 @@
                 
                 startPhysicsAnimation();
             } else {
-                console.log('物理效果已禁用');
-                
                 stopPhysicsAnimation();
                 
                 const physicsImagesCopy = [...physicsImages];
@@ -933,12 +926,6 @@
             
             stopRaining();
             startRaining();
-            
-            console.log(`已切换为${getIntensityName(intensity)}模式，图片生成间隔：${spawnInterval}ms`);
-            
-            if (intensity === 'superStorm') {
-                console.warn('警告：超级暴雨模式对性能要求较高，如果感到卡顿，请切换为较低密度设置。');
-            }
         }
 
         function getIntensityName(intensity) {
@@ -1047,15 +1034,11 @@
             }, 500);
         }
 
-        // *** 这是修复后的核心部分：完整的DOMContentLoaded事件监听器 ***
         document.addEventListener('DOMContentLoaded', function() {
-            // 1. 显示欢迎动态岛
             showDynamicIsland();
             
-            // 2. 预加载图片并开始下雨
             preloadImages();
             
-            // 3. 获取DOM元素
             const settingsButton = document.getElementById('settingsButton');
             const settingsPanel = document.getElementById('settingsPanel');
             const overlay = document.getElementById('overlay');
@@ -1063,7 +1046,6 @@
             const intensityOptions = document.querySelectorAll('.rain-intensity-option');
             const physicsToggle = document.getElementById('physicsToggle');
             
-            // 4. 绑定设置按钮点击事件
             settingsButton.addEventListener('click', function() {
                 settingsPanel.style.display = 'block';
                 overlay.style.display = 'block';
@@ -1072,18 +1054,15 @@
                 }, 10);
             });
             
-            // 5. 关闭设置面板的函数
             function closeSettingsPanel() {
                 settingsPanel.style.display = 'none';
                 overlay.style.display = 'none';
                 settingsPanel.classList.remove('show');
             }
             
-            // 6. 绑定关闭按钮和遮罩层点击事件
             closeButton.addEventListener('click', closeSettingsPanel);
             overlay.addEventListener('click', closeSettingsPanel);
             
-            // 7. 绑定下雨强度选项点击事件
             intensityOptions.forEach(option => {
                 option.addEventListener('click', function() {
                     const intensity = this.dataset.intensity;
@@ -1091,24 +1070,31 @@
                 });
             });
             
-            // 8. 绑定物理效果开关事件
             if (physicsToggle) {
                 physicsToggle.addEventListener('change', function() {
                     togglePhysics(this.checked);
                 });
             }
             
-            // 9. 设置默认选中的强度选项
             document.querySelector('.rain-intensity-option[data-intensity="medium"]').classList.add('selected');
             
-            // 10. 窗口大小变化时更新地面高度
             window.addEventListener('resize', function() {
                 physicsConfig.groundLevel = window.innerHeight - 50;
             });
+
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden || document.visibilityState === 'hidden') {
+                    stopRaining();
+                    stopPhysicsAnimation();
+                } else {
+                    startRaining();
+                }
+            });
         });
 
-        // 全局监听窗口大小变化
         window.addEventListener('resize', function() {
             physicsConfig.groundLevel = window.innerHeight - 50;
         });
     </script>
+</body>
+</html>
