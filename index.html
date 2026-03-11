@@ -38,6 +38,53 @@
             }
         }
         
+        /* 服务器状态检测区域 */
+        .server-status-container {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 10001;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 8px 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            opacity: 0;
+            transform: translateY(-40px);
+            animation: slideDownFadeIn 1.0s cubic-bezier(0.18, 0.89, 0.32, 1.28) 0.6s forwards;
+        }
+        
+        .server-status-label {
+            font-weight: bold;
+            color: #333;
+            font-size: 16px;
+        }
+        
+        .server-status-box {
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .status-online {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .status-offline {
+            background-color: #757575;
+            color: white;
+        }
+        
+        .status-checking {
+            background-color: #FFC107;
+            color: #333;
+        }
+        
         .welcome-dynamic-island {
             position: fixed;
             top: 20px;
@@ -440,6 +487,8 @@
             text-align: center;
             width: 100%;
             box-sizing: border-box;
+            font-weight: bold; /* 加粗 */
+            color: #FF0000; /* 红色 */
         }
         .friend-server-link:hover {
             background-color: #e0a800;
@@ -595,6 +644,12 @@
             .button-row-bottom {
                 flex-direction: row;
             }
+            .server-status-container {
+                top: 10px;
+                left: 10px;
+                padding: 6px 10px;
+                font-size: 14px;
+            }
         }
         @media (max-width: 480px) {
             .right-bottom-container {
@@ -612,10 +667,22 @@
             .button-row-bottom .mystery-game-link {
                 width: 100%;
             }
+            .server-status-container {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+                padding: 8px 10px;
+            }
         }
     </style>
 </head>
 <body>
+    
+    <!-- 服务器状态检测区域 -->
+    <div class="server-status-container" id="serverStatusContainer">
+        <span class="server-status-label">服务器状态：</span>
+        <div class="server-status-box status-checking" id="serverStatusBox">检测中...</div>
+    </div>
     
     <div class="welcome-dynamic-island" id="welcomeDynamicIsland">
         欢迎来到qiamao服务器网站❤️❤️❤️
@@ -727,6 +794,96 @@
             minSpeed: 0.05,
             collisionForce: 0.15
         };
+
+        // 服务器状态检测相关
+        const serverUrls = [
+            'https://frp-key.com:51830',
+            'https://frp-pen.com:28361',
+            'https://frp-rug.com:29365',
+            'https://frp-say.com:48573',
+            'https://frp-shy.com:19107'
+        ];
+        
+        let serverCheckInterval = null;
+        const checkInterval = 30000; // 每30秒检测一次
+
+        // 检测服务器状态函数
+        async function checkServerStatus() {
+            const statusBox = document.getElementById('serverStatusBox');
+            statusBox.textContent = '检测中...';
+            statusBox.className = 'server-status-box status-checking';
+            
+            let isOnline = false;
+            const checkPromises = [];
+            
+            // 为每个服务器创建一个检测Promise
+            for (const url of serverUrls) {
+                checkPromises.push(
+                    fetch(url, { 
+                        method: 'HEAD',
+                        mode: 'no-cors',
+                        cache: 'no-cache',
+                        headers: {
+                            'Cache-Control': 'no-cache'
+                        }
+                    })
+                    .then(() => {
+                        // 如果能到达这里，说明服务器响应了（即使是CORS错误也说明服务器在线）
+                        isOnline = true;
+                        return true;
+                    })
+                    .catch((error) => {
+                        // 对于Minecraft服务器，我们可以尝试其他检测方法
+                        // 这里我们简化处理：如果fetch失败，尝试通过Image对象检测
+                        return new Promise((resolve) => {
+                            const img = new Image();
+                            img.onload = function() {
+                                isOnline = true;
+                                resolve(true);
+                            };
+                            img.onerror = function() {
+                                resolve(false);
+                            };
+                            // 设置一个短超时
+                            setTimeout(() => {
+                                resolve(false);
+                            }, 3000);
+                            img.src = url + '?t=' + new Date().getTime();
+                        });
+                    })
+                );
+            }
+            
+            // 使用Promise.race来快速检测，只要有一个成功就返回
+            try {
+                await Promise.race([
+                    ...checkPromises,
+                    new Promise(resolve => setTimeout(() => resolve(false), 5000))
+                ]);
+            } catch (error) {
+                console.log('服务器检测出错:', error);
+            }
+            
+            // 最终判断结果
+            if (isOnline) {
+                statusBox.textContent = '在线';
+                statusBox.className = 'server-status-box status-online';
+            } else {
+                statusBox.textContent = '离线';
+                statusBox.className = 'server-status-box status-offline';
+            }
+            
+            return isOnline;
+        }
+
+        // 开始定期检测服务器状态
+        function startServerStatusCheck() {
+            // 立即检测一次
+            checkServerStatus();
+            
+            // 然后开始定期检测
+            serverCheckInterval = setInterval(checkServerStatus, checkInterval);
+        }
 
         function preloadImages() {
             for (let i = 1; i <= totalImages; i++) {
@@ -1089,6 +1246,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             showDynamicIsland();
             
+            // 开始服务器状态检测
+            startServerStatusCheck();
+            
             preloadImages();
             
             const settingsButton = document.getElementById('settingsButton');
@@ -1138,8 +1298,15 @@
                 if (document.hidden || document.visibilityState === 'hidden') {
                     stopRaining();
                     stopPhysicsAnimation();
+                    if (serverCheckInterval) {
+                        clearInterval(serverCheckInterval);
+                        serverCheckInterval = null;
+                    }
                 } else {
                     startRaining();
+                    if (!serverCheckInterval) {
+                        startServerStatusCheck();
+                    }
                 }
             });
         });
