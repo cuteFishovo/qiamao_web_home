@@ -413,65 +413,72 @@
         }
         
         .qq-group-link {
-            display: inline-block;
+            display: block;
             background-color: #12b7f5;
             color: white;
             padding: 12px 24px;
             text-decoration: none;
             border-radius: 5px;
             font-size: 16px;
-            margin-top: 20px;
             transition: background-color 0.3s;
-            margin-right: 10px;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
         }
         .qq-group-link:hover {
             background-color: #0d99d2;
         }
         .friend-server-link {
-            display: inline-block;
+            display: block;
             background-color: #ffc107;
             color: #212529;
             padding: 12px 24px;
             text-decoration: none;
             border-radius: 5px;
             font-size: 16px;
-            margin-top: 20px;
             transition: background-color 0.3s;
-            margin-left: 10px;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
         }
         .friend-server-link:hover {
             background-color: #e0a800;
         }
         .mystery-game-link {
-            display: inline-flex;
+            display: flex;
             align-items: center;
+            justify-content: center;
             background-color: #28a745;
             color: white;
             padding: 12px 20px 12px 15px;
             text-decoration: none;
             border-radius: 5px;
             font-size: 16px;
-            margin-top: 15px;
             transition: background-color 0.3s;
-            margin-right: 10px;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
         }
         .mystery-game-link:hover {
             background-color: #218838;
         }
         
         .pcl2-download-link {
-            display: inline-flex;
+            display: flex;
             align-items: center;
+            justify-content: center;
             background-color: #6f42c1;
             color: white;
             padding: 12px 20px 12px 15px;
             text-decoration: none;
             border-radius: 5px;
             font-size: 16px;
-            margin-top: 15px;
             transition: all 0.3s;
             border: none;
             cursor: pointer;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
         }
         .pcl2-download-link:hover {
             background-color: #5a32a3;
@@ -507,9 +514,11 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px;
+            gap: 8px; /* 减少按钮之间的上下间隙 */
             width: 100%;
-            max-width: 300px;
+            max-width: 100%;
+            padding: 0 5px; /* 左右留缝 */
+            box-sizing: border-box;
         }
         .recommend-text {
             text-align: center;
@@ -552,7 +561,7 @@
             }
             .mystery-game-link, .pcl2-download-link {
                 margin: 5px 0;
-                width: 90%;
+                width: 100%;
                 justify-content: center;
             }
             .falling-image {
@@ -630,7 +639,7 @@
                     <span class="pcl2-icon"></span>
                     前往PCL2官方下载地址
                 </a>
-                <a href="https://qm.qq.com/q/970547713" class="friend-server-link">友服QQ群跳转（已关服，静待复活）</a>
+                <a href="https://qm.qq.com/q/970547713" class="friend-server-link">友服QQ群跳转（已关服）</a>
                 <a href="https://qiamaoserver0721.top/qiamao_mini-game/index.html" class="mystery-game-link">神秘小游戏</a>
             </div>
         </div>
