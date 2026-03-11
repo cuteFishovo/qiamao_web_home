@@ -502,6 +502,7 @@
             flex-direction: column;
             align-items: center;
             margin-top: 20px;
+            width: 100%;
         }
         .button-row {
             display: flex;
@@ -510,15 +511,31 @@
             margin-bottom: 15px;
             flex-wrap: wrap;
         }
-        .button-column {
+        .button-column-top {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px; /* 减少按钮之间的上下间隙 */
+            gap: 8px;
             width: 100%;
             max-width: 100%;
-            padding: 0 5px; /* 左右留缝 */
+            padding: 0 5px;
             box-sizing: border-box;
+            margin-bottom: 15px;
+        }
+        .button-row-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 100%;
+            padding: 0 5px;
+            box-sizing: border-box;
+            gap: 10px;
+        }
+        .button-row-bottom .friend-server-link,
+        .button-row-bottom .mystery-game-link {
+            flex: 1;
+            min-width: 0;
         }
         .recommend-text {
             text-align: center;
@@ -571,9 +588,12 @@
                 font-size: 14px;
                 padding: 10px 12px;
             }
-            .button-column {
+            .button-column-top, .button-row-bottom {
                 width: 100%;
                 max-width: 100%;
+            }
+            .button-row-bottom {
+                flex-direction: row;
             }
         }
         @media (max-width: 480px) {
@@ -583,6 +603,14 @@
             }
             .bilibili-button, .special-thanks-button {
                 text-align: center;
+            }
+            .button-row-bottom {
+                flex-direction: column;
+                gap: 8px;
+            }
+            .button-row-bottom .friend-server-link,
+            .button-row-bottom .mystery-game-link {
+                width: 100%;
             }
         }
     </style>
@@ -633,12 +661,17 @@
         <p class="recommend-text">推荐使用PCL2启动器启动客户端</p>
         
         <div class="button-container">
-            <div class="button-column">
+            <!-- 上方垂直排列的主要按钮 -->
+            <div class="button-column-top">
                 <a href="https://qm.qq.com/q/nkP2rtU2Ag" class="qq-group-link">服务器QQ群</a>
                 <a href="https://ltcat.lanzouv.com/b0aj6gsid" class="pcl2-download-link" target="_blank">
                     <span class="pcl2-icon"></span>
                     前往PCL2官方下载地址
                 </a>
+            </div>
+            
+            <!-- 下方水平排列的次要按钮 -->
+            <div class="button-row-bottom">
                 <a href="https://qm.qq.com/q/970547713" class="friend-server-link">友服QQ群跳转（已关服）</a>
                 <a href="https://qiamaoserver0721.top/qiamao_mini-game/index.html" class="mystery-game-link">神秘小游戏</a>
             </div>
