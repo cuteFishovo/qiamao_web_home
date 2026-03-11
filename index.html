@@ -38,53 +38,6 @@
             }
         }
         
-        /* 服务器状态检测区域 */
-        .server-status-container {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 10001;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(255, 255, 255, 0.85);
-            padding: 8px 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            opacity: 0;
-            transform: translateY(-40px);
-            animation: slideDownFadeIn 1.0s cubic-bezier(0.18, 0.89, 0.32, 1.28) 0.6s forwards;
-        }
-        
-        .server-status-label {
-            font-weight: bold;
-            color: #333;
-            font-size: 16px;
-        }
-        
-        .server-status-box {
-            padding: 5px 12px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-        
-        .status-online {
-            background-color: #4CAF50;
-            color: white;
-        }
-        
-        .status-offline {
-            background-color: #757575;
-            color: white;
-        }
-        
-        .status-checking {
-            background-color: #FFC107;
-            color: #333;
-        }
-        
         .welcome-dynamic-island {
             position: fixed;
             top: 20px;
@@ -649,12 +602,6 @@
             .button-row-bottom {
                 flex-direction: row;
             }
-            .server-status-container {
-                top: 10px;
-                left: 10px;
-                padding: 6px 10px;
-                font-size: 14px;
-            }
         }
         @media (max-width: 480px) {
             .right-bottom-container {
@@ -672,22 +619,10 @@
             .button-row-bottom .mystery-game-link {
                 width: 100%;
             }
-            .server-status-container {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 5px;
-                padding: 8px 10px;
-            }
         }
     </style>
 </head>
 <body>
-    
-    <!-- 服务器状态检测区域 -->
-    <div class="server-status-container" id="serverStatusContainer">
-        <span class="server-status-label">服务器状态：</span>
-        <div class="server-status-box status-checking" id="serverStatusBox">检测中...</div>
-    </div>
     
     <div class="welcome-dynamic-island" id="welcomeDynamicIsland">
         欢迎来到qiamao服务器网站❤️❤️❤️
@@ -799,159 +734,6 @@
             minSpeed: 0.05,
             collisionForce: 0.15
         };
-
-        // 服务器状态检测相关 - 修正为TCP连接检测
-        const serverAddresses = [
-            { host: 'frp-key.com', port: 51830 },
-            { host: 'frp-pen.com', port: 28361 },
-            { host: 'frp-rug.com', port: 29365 },
-            { host: 'frp-say.com', port: 48573 },
-            { host: 'frp-shy.com', port: 19107 }
-        ];
-        
-        let serverCheckInterval = null;
-        const checkInterval = 30000; // 每30秒检测一次
-
-        // 检测服务器状态的函数 - 使用WebSocket连接TCP端口
-        async function checkServerStatus() {
-            const statusBox = document.getElementById('serverStatusBox');
-            statusBox.textContent = '检测中...';
-            statusBox.className = 'server-status-box status-checking';
-            
-            let isOnline = false;
-            
-            // 创建一个Promise数组来检测所有服务器
-            const checkPromises = serverAddresses.map(server => {
-                return new Promise((resolve) => {
-                    // 创建一个WebSocket来模拟TCP连接
-                    const socket = new WebSocket(`ws://${server.host}:${server.port}`);
-                    
-                    // 设置超时
-                    const timeout = setTimeout(() => {
-                        socket.close();
-                        resolve(false);
-                    }, 3000);
-                    
-                    // 连接成功
-                    socket.onopen = () => {
-                        clearTimeout(timeout);
-                        socket.close();
-                        isOnline = true;
-                        resolve(true);
-                    };
-                    
-                    // 连接失败
-                    socket.onerror = () => {
-                        clearTimeout(timeout);
-                        resolve(false);
-                    };
-                    
-                    // 连接关闭
-                    socket.onclose = () => {
-                        clearTimeout(timeout);
-                        resolve(false);
-                    };
-                });
-            });
-            
-            // 使用Promise.race来快速检测，只要有一个成功就返回
-            try {
-                await Promise.race([
-                    ...checkPromises,
-                    new Promise(resolve => setTimeout(() => resolve(false), 5000))
-                ]);
-            } catch (error) {
-                console.log('服务器检测出错:', error);
-            }
-            
-            // 最终判断结果
-            if (isOnline) {
-                statusBox.textContent = '在线';
-                statusBox.className = 'server-status-box status-online';
-            } else {
-                statusBox.textContent = '离线';
-                statusBox.className = 'server-status-box status-offline';
-            }
-            
-            return isOnline;
-        }
-
-        // 备选方案：使用Image对象检测（如果WebSocket被阻止）
-        async function checkServerStatusFallback() {
-            const statusBox = document.getElementById('serverStatusBox');
-            statusBox.textContent = '检测中...';
-            statusBox.className = 'server-status-box status-checking';
-            
-            let isOnline = false;
-            
-            // 创建一个Promise数组来检测所有服务器
-            const checkPromises = serverAddresses.map(server => {
-                return new Promise((resolve) => {
-                    const img = new Image();
-                    
-                    // 设置超时
-                    const timeout = setTimeout(() => {
-                        img.onload = null;
-                        img.onerror = null;
-                        resolve(false);
-                    }, 3000);
-                    
-                    // 加载成功
-                    img.onload = () => {
-                        clearTimeout(timeout);
-                        isOnline = true;
-                        resolve(true);
-                    };
-                    
-                    // 加载失败
-                    img.onerror = () => {
-                        clearTimeout(timeout);
-                        resolve(false);
-                    };
-                    
-                    // 尝试加载一个不存在的图片，但通过端口检测
-                    // 注意：这种方法并不完全可靠，但可以作为备选
-                    img.src = `http://${server.host}:${server.port}/favicon.ico?t=${Date.now()}`;
-                });
-            });
-            
-            // 使用Promise.race来快速检测
-            try {
-                await Promise.race([
-                    ...checkPromises,
-                    new Promise(resolve => setTimeout(() => resolve(false), 5000))
-                ]);
-            } catch (error) {
-                console.log('备选检测方法出错:', error);
-            }
-            
-            // 最终判断结果
-            if (isOnline) {
-                statusBox.textContent = '在线';
-                statusBox.className = 'server-status-box status-online';
-            } else {
-                statusBox.textContent = '离线';
-                statusBox.className = 'server-status-box status-offline';
-            }
-            
-            return isOnline;
-        }
-
-        // 开始定期检测服务器状态
-        function startServerStatusCheck() {
-            // 立即检测一次
-            checkServerStatus().catch(() => {
-                // 如果主方法失败，尝试备选方法
-                checkServerStatusFallback();
-            });
-            
-            // 然后开始定期检测
-            serverCheckInterval = setInterval(() => {
-                checkServerStatus().catch(() => {
-                    checkServerStatusFallback();
-                });
-            }, checkInterval);
-        }
 
         function preloadImages() {
             for (let i = 1; i <= totalImages; i++) {
@@ -1314,9 +1096,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             showDynamicIsland();
             
-            // 开始服务器状态检测
-            startServerStatusCheck();
-            
             preloadImages();
             
             const settingsButton = document.getElementById('settingsButton');
@@ -1366,15 +1145,8 @@
                 if (document.hidden || document.visibilityState === 'hidden') {
                     stopRaining();
                     stopPhysicsAnimation();
-                    if (serverCheckInterval) {
-                        clearInterval(serverCheckInterval);
-                        serverCheckInterval = null;
-                    }
                 } else {
                     startRaining();
-                    if (!serverCheckInterval) {
-                        startServerStatusCheck();
-                    }
                 }
             });
         });
