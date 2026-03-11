@@ -17,60 +17,16 @@
             margin: 0;
             padding: 20px;
             background-color: #f5f5f5;
+            background-image: url("qqqq.jpg");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
             position: relative;
             min-height: 100vh;
             overflow-x: hidden;
             opacity: 0;
             animation: bgFadeIn 1.6s cubic-bezier(0.18, 0.89, 0.32, 1.28) 0.5s forwards;
-        }
-        
-        /* 背景图片容器 */
-        .background-slideshow {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -2;
-        }
-        
-        .background-slide {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
-            opacity: 0;
-            transition: opacity 1.5s ease-in-out;
-        }
-        
-        /* 设置每个背景图片 */
-        .background-slide:nth-child(1) {
-            background-image: url("background.ico");
-        }
-        
-        .background-slide:nth-child(2) {
-            background-image: url("background2.ico");
-        }
-        
-        .background-slide:nth-child(3) {
-            background-image: url("background3.ico");
-        }
-        
-        .background-slide:nth-child(4) {
-            background-image: url("background4.ico");
-        }
-        
-        .background-slide:nth-child(5) {
-            background-image: url("background5.ico");
-        }
-        
-        .background-slide.active {
-            opacity: 1;
         }
         
         @keyframes bgFadeIn {
@@ -667,14 +623,6 @@
     </style>
 </head>
 <body>
-    <!-- 背景图片轮播容器 -->
-    <div class="background-slideshow">
-        <div class="background-slide active"></div>
-        <div class="background-slide"></div>
-        <div class="background-slide"></div>
-        <div class="background-slide"></div>
-        <div class="background-slide"></div>
-    </div>
     
     <div class="welcome-dynamic-island" id="welcomeDynamicIsland">
         欢迎来到qiamao服务器网站❤️❤️❤️
@@ -786,58 +734,6 @@
             minSpeed: 0.05,
             collisionForce: 0.15
         };
-
-        // 背景图片轮播功能
-        let currentBgIndex = 0;
-        let bgIntervalId = null;
-        const bgSlides = document.querySelectorAll('.background-slide');
-        const bgCount = bgSlides.length;
-        const bgChangeInterval = 7000; // 7秒
-
-        // 切换背景图片函数
-        function changeBackground() {
-            // 移除当前激活的背景
-            bgSlides[currentBgIndex].classList.remove('active');
-            
-            // 计算下一个背景索引
-            currentBgIndex = (currentBgIndex + 1) % bgCount;
-            
-            // 激活下一个背景
-            bgSlides[currentBgIndex].classList.add('active');
-        }
-
-        // 启动背景轮播
-        function startBackgroundSlideshow() {
-            // 先确保只有第一个背景是激活的
-            bgSlides.forEach((slide, index) => {
-                if (index === 0) {
-                    slide.classList.add('active');
-                } else {
-                    slide.classList.remove('active');
-                }
-            });
-            
-            // 设置轮播定时器
-            if (bgIntervalId) {
-                clearInterval(bgIntervalId);
-            }
-            
-            bgIntervalId = setInterval(changeBackground, bgChangeInterval);
-        }
-
-        // 当页面不可见时暂停背景轮播
-        function handleVisibilityChange() {
-            if (document.hidden || document.visibilityState === 'hidden') {
-                if (bgIntervalId) {
-                    clearInterval(bgIntervalId);
-                    bgIntervalId = null;
-                }
-            } else {
-                if (!bgIntervalId) {
-                    startBackgroundSlideshow();
-                }
-            }
-        }
 
         function preloadImages() {
             for (let i = 1; i <= totalImages; i++) {
@@ -1200,9 +1096,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             showDynamicIsland();
             
-            // 启动背景图片轮播
-            startBackgroundSlideshow();
-            
             preloadImages();
             
             const settingsButton = document.getElementById('settingsButton');
@@ -1248,20 +1141,12 @@
                 physicsConfig.groundLevel = window.innerHeight - 50;
             });
 
-            // 监听页面可见性变化
             document.addEventListener('visibilitychange', function() {
                 if (document.hidden || document.visibilityState === 'hidden') {
                     stopRaining();
                     stopPhysicsAnimation();
-                    if (bgIntervalId) {
-                        clearInterval(bgIntervalId);
-                        bgIntervalId = null;
-                    }
                 } else {
                     startRaining();
-                    if (!bgIntervalId) {
-                        startBackgroundSlideshow();
-                    }
                 }
             });
         });
