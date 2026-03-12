@@ -17,7 +17,7 @@
             margin: 0;
             padding: 20px;
             background-color: #f5f5f5;
-            background-image: url("qqqq.jpg");
+            background-image: url("background.ico");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -412,24 +412,28 @@
             background-position: center;
         }
         
-        /* 服务器QQ群按钮 - 红色加粗（用户要求的修改） */
+        /* 服务器QQ群按钮 - 修改：增加宽度和字体大小 */
         .qq-group-link {
             display: block;
             background-color: #12b7f5;
             color: white;
-            padding: 12px 24px;
+            padding: 16px 32px; /* 增加内边距，使按钮更大 */
             text-decoration: none;
-            border-radius: 5px;
-            font-size: 16px;
-            transition: background-color 0.3s;
+            border-radius: 8px; /* 稍微增加圆角 */
+            font-size: 20px; /* 放大字体 */
+            transition: all 0.3s;
             text-align: center;
-            width: 100%;
+            width: 120%; /* 增加宽度 */
             box-sizing: border-box;
-            font-weight: bold; /* 加粗 */
-            color: #FF0000; /* 红色 */
+            font-weight: bold;
+            color: #FF0000;
+            margin-left: -10%; /* 向左偏移以居中显示 */
+            transform: translateX(0);
         }
         .qq-group-link:hover {
             background-color: #0d99d2;
+            transform: translateY(-2px) scale(1.02); /* 添加缩放效果 */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
         
         /* 友服QQ群按钮 - 恢复原始样式（用户要求的修改） */
@@ -602,6 +606,13 @@
             .button-row-bottom {
                 flex-direction: row;
             }
+            /* 移动端调整：服务器QQ群按钮 */
+            .qq-group-link {
+                width: 110%; /* 移动端稍小一点 */
+                margin-left: -5%; /* 相应调整偏移 */
+                padding: 14px 24px; /* 稍微减小内边距 */
+                font-size: 18px; /* 稍微减小字体大小 */
+            }
         }
         @media (max-width: 480px) {
             .right-bottom-container {
@@ -618,6 +629,13 @@
             .button-row-bottom .friend-server-link,
             .button-row-bottom .mystery-game-link {
                 width: 100%;
+            }
+            /* 小屏幕移动端调整：服务器QQ群按钮 */
+            .qq-group-link {
+                width: 105%; /* 更小屏幕再减小一点 */
+                margin-left: -2.5%; /* 相应调整偏移 */
+                padding: 12px 20px; /* 进一步减小内边距 */
+                font-size: 16px; /* 进一步减小字体大小 */
             }
         }
     </style>
