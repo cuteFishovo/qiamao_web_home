@@ -412,29 +412,27 @@
             background-position: center;
         }
         
-        /* 服务器QQ群按钮 - 修改：增加宽度和字体大小，但保持与其他按钮对齐 */
+        /* 服务器QQ群按钮 - 红色加粗（用户要求的修改） */
         .qq-group-link {
             display: block;
             background-color: #12b7f5;
             color: white;
-            padding: 12px 24px; /* 恢复到原始内边距 */
+            padding: 12px 24px;
             text-decoration: none;
-            border-radius: 5px; /* 恢复到原始圆角 */
-            font-size: 18px; /* 稍微放大字体，但比之前小 */
-            transition: all 0.3s;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s;
             text-align: center;
-            width: 100%; /* 宽度与其他按钮一致 */
+            width: 100%;
             box-sizing: border-box;
-            font-weight: bold;
-            color: #FF0000;
+            font-weight: bold; /* 加粗 */
+            color: #FF0000; /* 红色 */
         }
         .qq-group-link:hover {
             background-color: #0d99d2;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
         
-        /* 友服QQ群按钮 - 恢复原始样式 */
+        /* 友服QQ群按钮 - 恢复原始样式（用户要求的修改） */
         .friend-server-link {
             display: block;
             background-color: #ffc107;
@@ -447,6 +445,7 @@
             text-align: center;
             width: 100%;
             box-sizing: border-box;
+            /* 移除红色和加粗，恢复原始样式 */
         }
         .friend-server-link:hover {
             background-color: #e0a800;
