@@ -412,31 +412,29 @@
             background-position: center;
         }
         
-        /* 服务器QQ群按钮 - 修改：增加宽度和字体大小 */
+        /* 服务器QQ群按钮 - 修改：增加宽度和字体大小，但保持与其他按钮对齐 */
         .qq-group-link {
             display: block;
             background-color: #12b7f5;
             color: white;
-            padding: 16px 32px; /* 增加内边距，使按钮更大 */
+            padding: 12px 24px; /* 恢复到原始内边距 */
             text-decoration: none;
-            border-radius: 8px; /* 稍微增加圆角 */
-            font-size: 20px; /* 放大字体 */
+            border-radius: 5px; /* 恢复到原始圆角 */
+            font-size: 18px; /* 稍微放大字体，但比之前小 */
             transition: all 0.3s;
             text-align: center;
-            width: 120%; /* 增加宽度 */
+            width: 100%; /* 宽度与其他按钮一致 */
             box-sizing: border-box;
             font-weight: bold;
             color: #FF0000;
-            margin-left: -10%; /* 向左偏移以居中显示 */
-            transform: translateX(0);
         }
         .qq-group-link:hover {
             background-color: #0d99d2;
-            transform: translateY(-2px) scale(1.02); /* 添加缩放效果 */
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
         
-        /* 友服QQ群按钮 - 恢复原始样式（用户要求的修改） */
+        /* 友服QQ群按钮 - 恢复原始样式 */
         .friend-server-link {
             display: block;
             background-color: #ffc107;
@@ -449,7 +447,6 @@
             text-align: center;
             width: 100%;
             box-sizing: border-box;
-            /* 移除红色和加粗，恢复原始样式 */
         }
         .friend-server-link:hover {
             background-color: #e0a800;
@@ -606,13 +603,6 @@
             .button-row-bottom {
                 flex-direction: row;
             }
-            /* 移动端调整：服务器QQ群按钮 */
-            .qq-group-link {
-                width: 110%; /* 移动端稍小一点 */
-                margin-left: -5%; /* 相应调整偏移 */
-                padding: 14px 24px; /* 稍微减小内边距 */
-                font-size: 18px; /* 稍微减小字体大小 */
-            }
         }
         @media (max-width: 480px) {
             .right-bottom-container {
@@ -629,13 +619,6 @@
             .button-row-bottom .friend-server-link,
             .button-row-bottom .mystery-game-link {
                 width: 100%;
-            }
-            /* 小屏幕移动端调整：服务器QQ群按钮 */
-            .qq-group-link {
-                width: 105%; /* 更小屏幕再减小一点 */
-                margin-left: -2.5%; /* 相应调整偏移 */
-                padding: 12px 20px; /* 进一步减小内边距 */
-                font-size: 16px; /* 进一步减小字体大小 */
             }
         }
     </style>
