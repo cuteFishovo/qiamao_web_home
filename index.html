@@ -163,7 +163,6 @@
         
         .settings-button:hover {
             background-color: #45a049;
-            transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
         .settings-button:active {
@@ -549,20 +548,54 @@
             font-size: 14px;
         }
         
+        .settings-button {
+            animation: none !important;
+        }
+        
         @keyframes settingsButtonHoverIn {
-            0% { transform: scale(1) translateY(-2px); }
-            60% { transform: scale(1.1) translateY(-2px); }
-            80% { transform: scale(1.05) translateY(-2px); }
-            100% { transform: scale(1.07) translateY(-2px); }
+            0% { 
+                transform: scale(1) translateY(0);
+                box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            }
+            60% { 
+                transform: scale(1.1) translateY(0);
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            }
+            80% { 
+                transform: scale(1.05) translateY(0);
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            }
+            100% { 
+                transform: scale(1.07) translateY(0);
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            }
         }
 
         @keyframes settingsButtonHoverOut {
-            0% { transform: scale(1.07) translateY(-2px); }
-            20% { transform: scale(0.95) translateY(-2px); }
-            40% { transform: scale(1.02) translateY(-2px); }
-            60% { transform: scale(0.99) translateY(-2px); }
-            80% { transform: scale(1.01) translateY(-2px); }
-            100% { transform: scale(1) translateY(-2px); }
+            0% { 
+                transform: scale(1.07) translateY(0);
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            }
+            20% { 
+                transform: scale(0.95) translateY(0);
+                box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            }
+            40% { 
+                transform: scale(1.02) translateY(0);
+                box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            }
+            60% { 
+                transform: scale(0.99) translateY(0);
+                box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            }
+            80% { 
+                transform: scale(1.01) translateY(0);
+                box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            }
+            100% { 
+                transform: scale(1) translateY(0);
+                box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            }
         }
         
         @media (max-width: 768px) {
@@ -1162,19 +1195,43 @@
             });
 
             if (settingsButton) {
+                let isHovering = false;
+                let currentAnimation = null;
+                
                 settingsButton.addEventListener('mouseenter', function(e) {
-                    e.target.style.animation = 'settingsButtonHoverIn 0.5s cubic-bezier(0.34, 1.85, 0.64, 1.5) forwards';
+                    if (!isHovering) {
+                        isHovering = true;
+                        
+                        if (currentAnimation) {
+                            e.target.style.animation = 'none';
+                            void e.target.offsetWidth;
+                        }
+                        
+                        e.target.style.animation = 'settingsButtonHoverIn 0.5s cubic-bezier(0.34, 1.85, 0.64, 1.5) forwards';
+                        currentAnimation = 'settingsButtonHoverIn';
+                    }
                 });
                 
                 settingsButton.addEventListener('mouseleave', function(e) {
-                    e.target.style.animation = 'settingsButtonHoverOut 0.5s cubic-bezier(0.34, 1.85, 0.64, 1.5) forwards';
-                    
-                    e.target.addEventListener('animationend', function handler() {
-                        if (e.target.style.animationName === 'settingsButtonHoverOut') {
-                            e.target.style.animation = '';
+                    if (isHovering) {
+                        isHovering = false;
+                        
+                        if (currentAnimation === 'settingsButtonHoverIn') {
+                            e.target.style.animation = 'none';
+                            void e.target.offsetWidth;
+                            
+                            e.target.style.animation = 'settingsButtonHoverOut 0.5s cubic-bezier(0.34, 1.85, 0.64, 1.5) forwards';
+                            currentAnimation = 'settingsButtonHoverOut';
+                            
+                            e.target.addEventListener('animationend', function handler() {
+                                if (e.target.style.animationName === 'settingsButtonHoverOut') {
+                                    e.target.style.animation = '';
+                                    currentAnimation = null;
+                                }
+                                e.target.removeEventListener('animationend', handler);
+                            }, {once: true});
                         }
-                        e.target.removeEventListener('animationend', handler);
-                    });
+                    }
                 });
             }
         });
