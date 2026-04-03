@@ -412,7 +412,6 @@
             background-position: center;
         }
         
-        /* 服务器QQ群按钮 - 红色加粗（用户要求的修改） */
         .qq-group-link {
             display: block;
             background-color: #12b7f5;
@@ -425,14 +424,13 @@
             text-align: center;
             width: 100%;
             box-sizing: border-box;
-            font-weight: bold; /* 加粗 */
-            color: #FF0000; /* 红色 */
+            font-weight: bold;
+            color: #FF0000;
         }
         .qq-group-link:hover {
             background-color: #0d99d2;
         }
         
-        /* 友服QQ群按钮 - 恢复原始样式（用户要求的修改） */
         .friend-server-link {
             display: block;
             background-color: #ffc107;
@@ -445,7 +443,6 @@
             text-align: center;
             width: 100%;
             box-sizing: border-box;
-            /* 移除红色和加粗，恢复原始样式 */
         }
         .friend-server-link:hover {
             background-color: #e0a800;
@@ -550,6 +547,30 @@
             margin-bottom: 10px;
             color: #555;
             font-size: 14px;
+        }
+        
+        .settings-button, .rain-intensity-option, .special-thanks-button, 
+        .bilibili-button, .qq-group-link, .friend-server-link, 
+        .mystery-game-link, .pcl2-download-link, .close-button {
+            transition: transform 0.1s linear;
+            transform-origin: center;
+            will-change: transform;
+        }
+
+        @keyframes buttonHoverIn {
+            0% { transform: scale(1); }
+            60% { transform: scale(1.1); }
+            80% { transform: scale(1.05); }
+            100% { transform: scale(1.07); }
+        }
+
+        @keyframes buttonHoverOut {
+            0% { transform: scale(1.07); }
+            20% { transform: scale(0.95); }
+            40% { transform: scale(1.02); }
+            60% { transform: scale(0.99); }
+            80% { transform: scale(1.01); }
+            100% { transform: scale(1); }
         }
         
         @media (max-width: 768px) {
@@ -668,7 +689,6 @@
         <p class="recommend-text">推荐使用PCL2启动器启动客户端</p>
         
         <div class="button-container">
-            <!-- 上方垂直排列的主要按钮 -->
             <div class="button-column-top">
                 <a href="https://qm.qq.com/q/nkP2rtU2Ag" class="qq-group-link">服务器QQ群</a>
                 <a href="https://ltcat.lanzouv.com/b0aj6gsid" class="pcl2-download-link" target="_blank">
@@ -677,7 +697,6 @@
                 </a>
             </div>
             
-            <!-- 下方水平排列的次要按钮 -->
             <div class="button-row-bottom">
                 <a href="https://qm.qq.com/q/970547713" class="friend-server-link">友服QQ群跳转（已关服）</a>
                 <a href="https://qiamaoserver0721.top/qiamao_mini-game/index.html" class="mystery-game-link">神秘小游戏</a>
@@ -1147,6 +1166,36 @@
                     stopPhysicsAnimation();
                 } else {
                     startRaining();
+                }
+            });
+
+            const allButtons = document.querySelectorAll('button, a[class*="button"], a[class*="link"], .close-button');
+            
+            allButtons.forEach(button => {
+                if (button.id === 'settingsButton' || 
+                    button.classList.contains('rain-intensity-option') ||
+                    button.classList.contains('special-thanks-button') ||
+                    button.classList.contains('bilibili-button') ||
+                    button.classList.contains('qq-group-link') ||
+                    button.classList.contains('friend-server-link') ||
+                    button.classList.contains('mystery-game-link') ||
+                    button.classList.contains('pcl2-download-link') ||
+                    button.classList.contains('close-button')) {
+                    
+                    button.addEventListener('mouseenter', function(e) {
+                        e.target.style.animation = 'buttonHoverIn 0.5s cubic-bezier(0.34, 1.85, 0.64, 1.5) forwards';
+                    });
+                    
+                    button.addEventListener('mouseleave', function(e) {
+                        e.target.style.animation = 'buttonHoverOut 0.5s cubic-bezier(0.34, 1.85, 0.64, 1.5) forwards';
+                        
+                        e.target.addEventListener('animationend', function handler() {
+                            if (e.target.style.animationName === 'buttonHoverOut') {
+                                e.target.style.animation = '';
+                            }
+                            e.target.removeEventListener('animationend', handler);
+                        });
+                    });
                 }
             });
         });
