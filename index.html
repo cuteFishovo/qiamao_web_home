@@ -163,6 +163,7 @@
         
         .settings-button:hover {
             background-color: #45a049;
+            transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
         .settings-button:active {
@@ -366,6 +367,7 @@
             border: 2px solid #fff;
         }
         .special-thanks-button:hover {
+            transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0,0,0,0.3);
             background: linear-gradient(90deg, #FF3333 0%, #FF3333 50%, #3399FF 50%, #3399FF 100%);
         }
@@ -393,6 +395,7 @@
         }
         .bilibili-button:hover {
             background-color: #FFC400;
+            transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
         .bilibili-button:active {
@@ -483,6 +486,7 @@
         }
         .pcl2-download-link:hover {
             background-color: #5a32a3;
+            transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
         .pcl2-download-link:active {
@@ -545,28 +549,20 @@
             font-size: 14px;
         }
         
-        .settings-button, .rain-intensity-option, .special-thanks-button, 
-        .bilibili-button, .qq-group-link, .friend-server-link, 
-        .mystery-game-link, .pcl2-download-link, .close-button {
-            transition: transform 0.1s linear;
-            transform-origin: center;
-            will-change: transform;
+        @keyframes settingsButtonHoverIn {
+            0% { transform: scale(1) translateY(-2px); }
+            60% { transform: scale(1.1) translateY(-2px); }
+            80% { transform: scale(1.05) translateY(-2px); }
+            100% { transform: scale(1.07) translateY(-2px); }
         }
 
-        @keyframes buttonHoverIn {
-            0% { transform: scale(1); }
-            60% { transform: scale(1.03); }
-            80% { transform: scale(1.02); }
-            100% { transform: scale(1.025); }
-        }
-
-        @keyframes buttonHoverOut {
-            0% { transform: scale(1.025); }
-            20% { transform: scale(0.98); }
-            40% { transform: scale(1.01); }
-            60% { transform: scale(0.995); }
-            80% { transform: scale(1.005); }
-            100% { transform: scale(1); }
+        @keyframes settingsButtonHoverOut {
+            0% { transform: scale(1.07) translateY(-2px); }
+            20% { transform: scale(0.95) translateY(-2px); }
+            40% { transform: scale(1.02) translateY(-2px); }
+            60% { transform: scale(0.99) translateY(-2px); }
+            80% { transform: scale(1.01) translateY(-2px); }
+            100% { transform: scale(1) translateY(-2px); }
         }
         
         @media (max-width: 768px) {
@@ -689,7 +685,7 @@
                 <a href="https://qm.qq.com/q/nkP2rtU2Ag" class="qq-group-link">服务器QQ群</a>
                 <a href="https://ltcat.lanzouv.com/b0aj6gsid" class="pcl2-download-link" target="_blank">
                     <span class="pcl2-icon"></span>
-                    前往PCL2官方下载地址
+                    前往PCL2官方下载地址（下载密码:PCL2）
                 </a>
             </div>
             
@@ -1165,35 +1161,22 @@
                 }
             });
 
-            const allButtons = document.querySelectorAll('button, a[class*="button"], a[class*="link"], .close-button');
-            
-            allButtons.forEach(button => {
-                if (button.id === 'settingsButton' || 
-                    button.classList.contains('rain-intensity-option') ||
-                    button.classList.contains('special-thanks-button') ||
-                    button.classList.contains('bilibili-button') ||
-                    button.classList.contains('qq-group-link') ||
-                    button.classList.contains('friend-server-link') ||
-                    button.classList.contains('mystery-game-link') ||
-                    button.classList.contains('pcl2-download-link') ||
-                    button.classList.contains('close-button')) {
+            if (settingsButton) {
+                settingsButton.addEventListener('mouseenter', function(e) {
+                    e.target.style.animation = 'settingsButtonHoverIn 0.5s cubic-bezier(0.34, 1.85, 0.64, 1.5) forwards';
+                });
+                
+                settingsButton.addEventListener('mouseleave', function(e) {
+                    e.target.style.animation = 'settingsButtonHoverOut 0.5s cubic-bezier(0.34, 1.85, 0.64, 1.5) forwards';
                     
-                    button.addEventListener('mouseenter', function(e) {
-                        e.target.style.animation = 'buttonHoverIn 0.5s cubic-bezier(0.34, 1.85, 0.64, 1.5) forwards';
+                    e.target.addEventListener('animationend', function handler() {
+                        if (e.target.style.animationName === 'settingsButtonHoverOut') {
+                            e.target.style.animation = '';
+                        }
+                        e.target.removeEventListener('animationend', handler);
                     });
-                    
-                    button.addEventListener('mouseleave', function(e) {
-                        e.target.style.animation = 'buttonHoverOut 0.5s cubic-bezier(0.34, 1.85, 0.64, 1.5) forwards';
-                        
-                        e.target.addEventListener('animationend', function handler() {
-                            if (e.target.style.animationName === 'buttonHoverOut') {
-                                e.target.style.animation = '';
-                            }
-                            e.target.removeEventListener('animationend', handler);
-                        });
-                    });
-                }
-            });
+                });
+            }
         });
 
         window.addEventListener('resize', function() {
