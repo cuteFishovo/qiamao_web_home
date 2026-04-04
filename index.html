@@ -120,7 +120,6 @@
             animation: slideUpFadeIn 1.1s cubic-bezier(0.18, 0.89, 0.32, 1.28) 0.9s forwards;
         }
         
-        /* 修改：settings-button 移除了所有动画 */
         .settings-button {
             position: fixed;
             top: 20px;
@@ -134,15 +133,10 @@
             cursor: pointer;
             z-index: 10000;
             box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            opacity: 1; /* 直接显示，不移入动画 */
-            transform: translateY(0); /* 移除下滑动画 */
-        }
-        
-        .settings-button:hover {
-            background-color: #45a049;
-        }
-        .settings-button:active {
-            transform: translateY(0);
+            transition: all 0.3s;
+            opacity: 0;
+            transform: translateY(-40px);
+            animation: slideDownFadeIn 1.0s cubic-bezier(0.18, 0.89, 0.32, 1.28) 0.5s forwards;
         }
         
         @keyframes slideUpFadeIn {
@@ -165,6 +159,15 @@
                 opacity: 1;
                 transform: translateY(0);
             }
+        }
+        
+        .settings-button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .settings-button:active {
+            transform: translateY(0);
         }
         
         .falling-image {
@@ -546,6 +549,30 @@
             font-size: 14px;
         }
         
+        .settings-button, .rain-intensity-option, .special-thanks-button, 
+        .bilibili-button, .qq-group-link, .friend-server-link, 
+        .mystery-game-link, .pcl2-download-link, .close-button {
+            transition: transform 0.1s linear;
+            transform-origin: center;
+            will-change: transform;
+        }
+
+        @keyframes buttonHoverIn {
+            0% { transform: scale(1); }
+            60% { transform: scale(1.03); }
+            80% { transform: scale(1.02); }
+            100% { transform: scale(1.025); }
+        }
+
+        @keyframes buttonHoverOut {
+            0% { transform: scale(1.025); }
+            20% { transform: scale(0.98); }
+            40% { transform: scale(1.01); }
+            60% { transform: scale(0.995); }
+            80% { transform: scale(1.005); }
+            100% { transform: scale(1); }
+        }
+        
         @media (max-width: 768px) {
             .email-info {
                 left: 10px;
@@ -628,17 +655,17 @@
     
     <div class="settings-panel" id="settingsPanel">
         <span class="close-button" id="closeButton">✕</span>
-        <h3>✋️图标下雨效果设置</h3>
-        <p style="text-align: center; color: #666; margin-bottom: 20px;">选择图标下落密度</p>
+        <h3>图标下雨效果设置</h3>
+        <p style="text-align: center; color: #666; margin-bottom: 20px;">选择图标下落密度（根据你电脑配置来就行）</p>
         
         <button class="rain-intensity-option" data-intensity="light">小雨（密集度减少75%）</button>
-        <button class="rain-intensity-option selected" data-intensity="medium">中雨（默认密集度）</button>
+        <button class="rain-intensity-option selected" data-intensity="medium">中雨（默认）</button>
         <button class="rain-intensity-option" data-intensity="heavy">大雨（密集度增加30%）</button>
         <button class="rain-intensity-option" data-intensity="storm">暴雨（密集度增加100%）</button>
-        <button class="rain-intensity-option super-storm" data-intensity="superStorm">超级大暴雨（密集度增加310%）</button>
+        <button class="rain-intensity-option super-storm" data-intensity="superStorm">超级牛逼大暴雨（密集度增加310%）</button>
         
         <div class="physics-toggle-container">
-            <span class="physics-toggle-label"><span style="color: #ff9900; font-weight: bold;">BETA</span> （⚠️高性能占用⚠️）启用物理效果</span>
+            <span class="physics-toggle-label"><span style="color: #ff9900; font-weight: bold;">BETA</span> （⚠️高性能占用）启用物理效果</span>
             <label class="physics-toggle">
                 <input type="checkbox" id="physicsToggle">
                 <span class="physics-slider"></span>
@@ -649,7 +676,7 @@
             ⚠️注意：高密度设置可能影响页面性能，请根据设备性能选择⚠️
         </p>
         <p style="font-size: 12px; color: #999; text-align: center; margin-top: 5px;">
-            ⚠️物理效果开启时，图标在底部堆积并碰撞；关闭时，图标会下落出屏幕;建议不要长时间开启⚠️
+            ⚠️物理效果开启时，图标在底部堆积并碰撞；关闭时，图标会下落出屏幕（对性能要求高）⚠️
         </p>
     </div>
     
@@ -659,7 +686,7 @@
         <p>👉复制群号973937570或点击蓝色按钮自动跳转</p>
         <p>💀你也可以点击按钮进入友服qq群（已关服，静待复活💀💀💀）</p>
         
-        <p class="recommend-text">❗️❗️推荐使用PCL2启动器启动客户端❗️❗️</p>
+        <p class="recommend-text">❗️❗️推荐使用PCL2启动器游玩本服务器❗️❗️</p>
         
         <div class="button-container">
             <div class="button-column-top">
@@ -671,22 +698,22 @@
             </div>
             
             <div class="button-row-bottom">
-                <a href="https://qm.qq.com/q/970547713" class="friend-server-link">💀友服QQ群跳转（已关服💀💀💀）</a>
+                <a href="https://qm.qq.com/q/970547713" class="friend-server-link">💀友服QQ群跳转（已关服）💀</a>
                 <a href="https://qiamaoserver0721.top/qiamao_mini-game/index.html" class="mystery-game-link">神秘小游戏（轻微猎奇，慎入）</a>
             </div>
         </div>
     </div>
     
-    <div class="email-info">⚠️服务器反馈邮箱：0d00@qiamaoserver0721.top或1348179575@qq.com</div>
+    <div class="email-info">👉服务器反馈邮箱：0d00@qiamaoserver0721.top或1348179575@qq.com</div>
     
     <div class="right-bottom-container">
         <a href="https://space.bilibili.com/1071531206" class="special-thanks-button" target="_blank">
-            ❤️特别感谢：cute-Fish(点击跳转到他的b站账号)
+            🎊特别感谢：cute-Fish(点击跳转到他的b站账号)🎊
         </a>
         
         <a href="https://space.bilibili.com/651371142" class="bilibili-button" target="_blank">
             <span class="bilibili-icon"></span>
-            ❤️腐竹的B站账号
+            ❤️腐竹的B站账号❤️
         </a>
     </div>
 
@@ -1142,7 +1169,35 @@
                 }
             });
 
-            // 移除了所有与settings-button相关的动画事件监听器
+            const allButtons = document.querySelectorAll('button, a[class*="button"], a[class*="link"], .close-button');
+            
+            allButtons.forEach(button => {
+                if (button.id === 'settingsButton' || 
+                    button.classList.contains('rain-intensity-option') ||
+                    button.classList.contains('special-thanks-button') ||
+                    button.classList.contains('bilibili-button') ||
+                    button.classList.contains('qq-group-link') ||
+                    button.classList.contains('friend-server-link') ||
+                    button.classList.contains('mystery-game-link') ||
+                    button.classList.contains('pcl2-download-link') ||
+                    button.classList.contains('close-button')) {
+                    
+                    button.addEventListener('mouseenter', function(e) {
+                        e.target.style.animation = 'buttonHoverIn 0.5s cubic-bezier(0.34, 1.85, 0.64, 1.5) forwards';
+                    });
+                    
+                    button.addEventListener('mouseleave', function(e) {
+                        e.target.style.animation = 'buttonHoverOut 0.5s cubic-bezier(0.34, 1.85, 0.64, 1.5) forwards';
+                        
+                        e.target.addEventListener('animationend', function handler() {
+                            if (e.target.style.animationName === 'buttonHoverOut') {
+                                e.target.style.animation = '';
+                            }
+                            e.target.removeEventListener('animationend', handler);
+                        });
+                    });
+                }
+            });
         });
 
         window.addEventListener('resize', function() {
