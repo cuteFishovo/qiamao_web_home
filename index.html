@@ -37,8 +37,24 @@
                 inset 0 0 20px rgba(255, 182, 193, 0.5), /* 内发光 */
                 0 0 30px rgba(255, 182, 193, 0.6); /* 外发光 */
             overflow: hidden;
-            animation: frameZoom 1.5s ease-out forwards;
+            animation: frameZoom 2s ease-out forwards;
             animation-delay: 0.3s; /* 延迟0.3秒开始，让页面先加载 */
+        }
+        
+        /* 背景图片容器，用于控制图片的扩散 */
+        .bg-image-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("background.ico");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transform: scale(0.2); /* 初始缩放为0.2，与边框大小匹配 */
+            animation: imageScale 2s ease-out forwards;
+            animation-delay: 0.3s;
         }
         
         @keyframes frameZoom {
@@ -52,6 +68,16 @@
                     inset 0 0 20px rgba(255, 182, 193, 0.5),
                     0 0 30px rgba(255, 182, 193, 0.6);
             }
+            85% {
+                width: 100%;
+                height: 100%;
+                border-radius: 0;
+                border-width: 4px;
+                box-shadow: 
+                    0 0 0 0 rgba(0, 0, 0, 0.95),
+                    inset 0 0 20px rgba(255, 182, 193, 0.5),
+                    0 0 30px rgba(255, 182, 193, 0.6);
+            }
             100% {
                 width: 100%;
                 height: 100%;
@@ -62,7 +88,19 @@
             }
         }
         
-        /* 修改body背景设置，移除原有背景淡入动画 */
+        @keyframes imageScale {
+            0% {
+                transform: scale(0.2);
+            }
+            85% {
+                transform: scale(1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        /* 修改body背景设置 */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -76,11 +114,8 @@
             position: relative;
             min-height: 100vh;
             overflow-x: hidden;
-            /* 移除原有的 opacity: 0 和 bgFadeIn 动画 */
-            opacity: 1; /* 改为直接显示 */
+            opacity: 1;
         }
-        
-        /* 移除原有的bgFadeIn关键帧动画 */
         
         .welcome-dynamic-island {
             position: fixed;
@@ -129,7 +164,7 @@
             z-index: 1;
             opacity: 0;
             transform: translateY(80px);
-            animation: slideUpFadeIn 1.2s cubic-bezier(0.18, 0.89, 0.32, 1.28) 2s forwards; /* 延迟到2秒后开始 */
+            animation: slideUpFadeIn 1.2s cubic-bezier(0.18, 0.89, 0.32, 1.28) 2.5s forwards; /* 延迟到2.5秒后开始 */
         }
         
         .email-info {
@@ -146,7 +181,7 @@
             max-width: 300px;
             opacity: 0;
             transform: translateY(60px);
-            animation: slideUpFadeIn 1.1s cubic-bezier(0.18, 0.89, 0.32, 1.28) 2.3s forwards; /* 延迟到2.3秒后开始 */
+            animation: slideUpFadeIn 1.1s cubic-bezier(0.18, 0.89, 0.32, 1.28) 2.8s forwards; /* 延迟到2.8秒后开始 */
         }
         
         .right-bottom-container {
@@ -161,7 +196,7 @@
             max-width: 300px;
             opacity: 0;
             transform: translateY(60px);
-            animation: slideUpFadeIn 1.1s cubic-bezier(0.18, 0.89, 0.32, 1.28) 2.1s forwards; /* 延迟到2.1秒后开始 */
+            animation: slideUpFadeIn 1.1s cubic-bezier(0.18, 0.89, 0.32, 1.28) 2.6s forwards; /* 延迟到2.6秒后开始 */
         }
         
         .settings-button {
@@ -180,7 +215,7 @@
             transition: all 0.3s;
             opacity: 0;
             transform: translateY(-40px);
-            animation: slideDownFadeIn 1.0s cubic-bezier(0.18, 0.89, 0.32, 1.28) 2s forwards; /* 延迟到2秒后开始 */
+            animation: slideDownFadeIn 1.0s cubic-bezier(0.18, 0.89, 0.32, 1.28) 2.5s forwards; /* 延迟到2.5秒后开始 */
         }
         
         @keyframes slideUpFadeIn {
@@ -690,7 +725,9 @@
 <body>
     <!-- 新增：背景入场动画覆盖层 -->
     <div class="bg-animation-overlay" id="bgAnimationOverlay">
-        <div class="bg-frame" id="bgFrame"></div>
+        <div class="bg-frame" id="bgFrame">
+            <div class="bg-image-container" id="bgImageContainer"></div>
+        </div>
     </div>
     
     <div class="welcome-dynamic-island" id="welcomeDynamicIsland">
@@ -770,6 +807,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const bgAnimationOverlay = document.getElementById('bgAnimationOverlay');
             const bgFrame = document.getElementById('bgFrame');
+            const bgImageContainer = document.getElementById('bgImageContainer');
             
             // 动画完成后移除覆盖层
             bgFrame.addEventListener('animationend', function() {
@@ -781,6 +819,11 @@
                     // 动画完成后显示欢迎动态岛
                     showDynamicIsland();
                 }, 500);
+            });
+            
+            // 图片容器动画完成后，确保图片完全显示
+            bgImageContainer.addEventListener('animationend', function() {
+                // 图片已经扩散完成，边框会在之后渐隐
             });
         });
 
@@ -1178,7 +1221,7 @@
             }, 500);
         }
 
-        // 修改：在背景动画完成后才开始预加载图片
+        // 在背景动画完成后才开始预加载图片
         document.addEventListener('DOMContentLoaded', function() {
             // 背景动画在页面加载时自动开始
             // 动画完成后会触发showDynamicIsland()
@@ -1186,7 +1229,7 @@
             // 延迟预加载图片，等背景动画完成后再开始
             setTimeout(() => {
                 preloadImages();
-            }, 2000); // 等待背景动画完成
+            }, 2500); // 等待背景动画完成
             
             const settingsButton = document.getElementById('settingsButton');
             const settingsPanel = document.getElementById('settingsPanel');
