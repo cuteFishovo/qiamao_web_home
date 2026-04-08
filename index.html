@@ -30,7 +30,7 @@
             width: 0;
             height: 0;
             border-radius: 50%;
-            box-shadow: 0 0 0 1000px rgba(0, 0, 0, 1), 0 0 0 5px rgba(120, 120, 120, 0.4), inset 0 0 20px rgba(120, 120, 120, 0.3);
+            box-shadow: 0 0 0 1000px rgba(0, 0, 0, 1), 0 0 0 5px rgba(120, 120, 120, 0.8), inset 0 0 20px rgba(120, 120, 120, 0.6);
             overflow: hidden;
             animation: frameZoom 1.8s ease-out forwards;
             animation-delay: 0.3s;
@@ -40,12 +40,26 @@
             0% {
                 width: 0;
                 height: 0;
-                box-shadow: 0 0 0 1000px rgba(0, 0, 0, 1), 0 0 0 5px rgba(120, 120, 120, 0.4), inset 0 0 20px rgba(120, 120, 120, 0.3);
+                box-shadow: 0 0 0 1000px rgba(0, 0, 0, 1), 0 0 0 5px rgba(120, 120, 120, 0.8), inset 0 0 20px rgba(120, 120, 120, 0.6);
             }
             100% {
                 width: 200vmax;
                 height: 200vmax;
-                box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0), 0 0 0 5px rgba(120, 120, 120, 0), inset 0 0 20px rgba(120, 120, 120, 0);
+                box-shadow: 0 0 0 1000px rgba(0, 0, 0, 1), 0 0 0 5px rgba(120, 120, 120, 0.8), inset 0 0 20px rgba(120, 120, 120, 0.6);
+                opacity: 1;
+            }
+        }
+        
+        .bg-animation-overlay {
+            animation: overlayFadeOut 0.1s ease-out forwards;
+            animation-delay: 2.1s; /* 等待frameZoom动画完成 */
+        }
+        
+        @keyframes overlayFadeOut {
+            0% {
+                opacity: 1;
+            }
+            100% {
                 opacity: 0;
             }
         }
@@ -752,12 +766,13 @@
             const bgFrame = document.getElementById('bgFrame');
             
             bgFrame.addEventListener('animationend', function() {
+                // 聚光灯动画完成后，给整个覆盖层添加淡出动画
                 setTimeout(() => {
                     if (bgAnimationOverlay.parentNode) {
                         document.body.removeChild(bgAnimationOverlay);
                     }
                     showDynamicIsland();
-                }, 500);
+                }, 100);
             });
         });
 
