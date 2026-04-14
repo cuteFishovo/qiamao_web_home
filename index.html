@@ -390,6 +390,70 @@
             display: none;
         }
         
+        /* 服务器QQ群按钮金边效果 - 新增样式 */
+        .qq-group-golden-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            padding: 2px;
+            border-radius: 7px;
+            background: linear-gradient(45deg, 
+                #FFD700 0%, 
+                #FFEC8B 25%, 
+                #FFD700 50%, 
+                #FFEC8B 75%, 
+                #FFD700 100%);
+            background-size: 200% 200%;
+            z-index: 1;
+            overflow: hidden;
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+            margin-bottom: 8px;
+        }
+        
+        /* 旋转金光效果 */
+        .qq-group-golden-wrapper::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                from 0deg at 50% 50%,
+                transparent 0deg,
+                rgba(255, 255, 200, 0.8) 60deg,
+                rgba(255, 255, 230, 0.9) 90deg,
+                rgba(255, 255, 200, 0.8) 120deg,
+                transparent 180deg,
+                transparent 240deg,
+                rgba(255, 255, 200, 0.8) 300deg,
+                rgba(255, 255, 230, 0.9) 330deg,
+                rgba(255, 255, 200, 0.8) 360deg
+            );
+            animation: rotateGoldLight 3.5s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        /* 金光旋转动画 */
+        @keyframes rotateGoldLight {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        /* 确保按钮在金边上方且不受伪元素影响 */
+        .qq-group-golden-wrapper .qq-group-link {
+            position: relative;
+            z-index: 2;
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
         .special-thanks-button {
             display: block;
             width: 100%;
@@ -641,6 +705,9 @@
                 flex-direction: column;
                 gap: 10px;
             }
+            .qq-group-golden-wrapper {
+                width: 100%;
+            }
             .qq-group-link, .friend-server-link {
                 margin: 0;
             }
@@ -733,7 +800,10 @@
         
         <div class="button-container">
             <div class="button-column-top">
-                <a href="https://qm.qq.com/q/nkP2rtU2Ag" class="qq-group-link">👉服务器QQ群👈</a>
+                <!-- 为服务器QQ群按钮添加金边效果 -->
+                <div class="qq-group-golden-wrapper">
+                    <a href="https://qm.qq.com/q/nkP2rtU2Ag" class="qq-group-link">👉服务器QQ群👈</a>
+                </div>
                 <a href="https://ltcat.lanzouv.com/b0aj6gsid" class="pcl2-download-link" target="_blank">
                     <span class="pcl2-icon"></span>
                     前往PCL2官方下载地址（下载密码:PCL2）
